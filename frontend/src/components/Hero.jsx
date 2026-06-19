@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Hero() {
   return (
     <section className="hero">
@@ -17,7 +19,10 @@ function Hero() {
       </p>
 
       <div className="hero-buttons">
-        <button className="start-btn">Start Free</button>
+        <Link to="/dashboard" className="start-btn">
+          Start Free
+        </Link>
+
         <button className="preview-btn">
           Preview as User →
         </button>

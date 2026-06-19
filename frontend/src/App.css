@@ -684,3 +684,8 @@ button {
     gap: 10px;
   }
 }
+
+.start-btn {
+  text-decoration: none;
+  display: inline-block;
+}
