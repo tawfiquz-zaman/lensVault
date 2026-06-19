@@ -813,3 +813,48 @@ button {
     0.08
   );
 }
+
+
+/* =========================
+   preview-list
+========================= */
+
+.preview-list {
+  margin-top: 20px;
+  display: grid;
+  gap: 15px;
+}
+
+.preview-item {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.preview-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.remove-btn {
+  margin-top: 10px;
+  border: none;
+  cursor: pointer;
+  background: crimson;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+.remove-btn:hover {
+  opacity: 0.9;
+}
+
+
+
+
+

@@ -1,34 +1,82 @@
+import { useRef, useState } from "react";
+
 function UploadModal({ isOpen, onClose }) {
+  const [files, setFiles] = useState([]);
+
+  const inputRef = useRef();
+
   if (!isOpen) return null;
+
+  const handleFiles = (selectedFiles) => {
+    const fileArray = Array.from(selectedFiles);
+
+    const previewFiles = fileArray.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setFiles((prev) => [...prev, ...previewFiles]);
+  };
+
+  const removeFile = (index) => {
+    const updatedFiles = [...files];
+
+    URL.revokeObjectURL(updatedFiles[index].preview);
+
+    updatedFiles.splice(index, 1);
+
+    setFiles(updatedFiles);
+  };
 
   return (
     <div className="modal-overlay">
       <div className="upload-modal">
-        <div className="modal-header">
-          <h2>Upload Photos</h2>
 
-          <button className="close-btn" onClick={onClose}>
-            ✕
-          </button>
-        </div>
+        <button className="close-btn" onClick={onClose}>
+          ✕
+        </button>
 
-        <div className="drop-zone">
-          <p>Drag & Drop Photos Here</p>
+        <h2>Upload Photos</h2>
 
-          <button className="browse-btn">
-            Browse Files
-          </button>
+        <p>{files.length} file(s) selected</p>
+
+        <div
+          className="upload-dropzone"
+          onClick={() => inputRef.current.click()}
+        >
+          <p>Click to choose images</p>
+
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            ref={inputRef}
+            style={{ display: "none" }}
+            onChange={(e) => handleFiles(e.target.files)}
+          />
         </div>
 
         <div className="preview-list">
-          <h3>Selected Files</h3>
+          {files.map((item, index) => (
+            <div className="preview-item" key={index}>
+              <img
+                src={item.preview}
+                alt="preview"
+                className="preview-image"
+              />
 
-          <ul>
-            <li>mountain.jpg</li>
-            <li>forest.png</li>
-            <li>river.jpeg</li>
-          </ul>
+              <p>{item.file.name}</p>
+
+              <button
+                className="remove-btn"
+                onClick={() => removeFile(index)}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
         </div>
+
       </div>
     </div>
   );
