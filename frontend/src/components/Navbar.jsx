@@ -1,15 +1,19 @@
 function Navbar() {
   return (
     <nav className="navbar">
-    <h2 className="logo">
-  📸 LensVault
-</h2>
+      <div className="logo">
+        <div className="logo-circle">P</div>
+        <span>PhotoVault</span>
+      </div>
 
-      <ul className="nav-links">
-        <li>Features</li>
-        <li>Pricing</li>
-        <li>Sign In</li>
-      </ul>
+      <div className="search-bar">
+        <input type="text" placeholder="Search..." />
+      </div>
+
+      <div className="nav-actions">
+        <button className="login-btn">Login</button>
+        <button className="join-btn">Join Free</button>
+      </div>
     </nav>
   );
 }

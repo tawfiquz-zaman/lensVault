@@ -1,17 +1,27 @@
 function Hero() {
   return (
     <section className="hero">
+      <div className="hero-badge">
+        FULL QUALITY • YOUR GOOGLE DRIVE • TOTAL PRIVACY
+      </div>
+
       <h1>
-        Store your photos securely in your own Google Drive.
+        Your Photos,
+        <br />
+        <span>Your Drive.</span>
       </h1>
 
       <p>
-        Private. Fast. Fully under your control.
+        Upload, showcase & share photography at full quality.
+        Every user gets their own isolated Google Drive.
       </p>
 
-      <button>
-        Connect Google Drive
-      </button>
+      <div className="hero-buttons">
+        <button className="start-btn">Start Free</button>
+        <button className="preview-btn">
+          Preview as User →
+        </button>
+      </div>
     </section>
   );
 }
