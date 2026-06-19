@@ -1,30 +1,32 @@
+import { useState } from "react";
+
 import DashboardNavbar from "../components/DashboardNavbar";
 import StorageCard from "../components/StorageCard";
 import UploadButton from "../components/UploadButton";
 import GalleryGrid from "../components/GalleryGrid";
+import UploadModal from "../components/UploadModal";
 
 function Dashboard() {
+  const [isModalOpen, setIsModalOpen] =
+    useState(false);
+
   return (
-    <>
+    <div className="dashboard">
       <DashboardNavbar />
 
-      <section className="dashboard-container">
-        <div className="dashboard-header">
-          <StorageCard />
-          <UploadButton />
-        </div>
+      <StorageCard />
 
-        <div className="dashboard-filters">
-          <button className="active">All</button>
-          <button>Nature</button>
-          <button>Travel</button>
-          <button>Wildlife</button>
-          <button>Portraits</button>
-        </div>
+      <UploadButton
+        onClick={() => setIsModalOpen(true)}
+      />
 
-        <GalleryGrid />
-      </section>
-    </>
+      <GalleryGrid />
+
+      <UploadModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </div>
   );
 }
 

@@ -1,6 +1,9 @@
-function UploadButton() {
+function UploadButton({ onClick }) {
   return (
-    <button className="upload-btn">
+    <button
+      className="upload-btn"
+      onClick={onClick}
+    >
       + Upload Photos
     </button>
   );
