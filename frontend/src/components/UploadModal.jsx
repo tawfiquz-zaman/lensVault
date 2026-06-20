@@ -28,16 +28,14 @@ function UploadModal({ isOpen, onClose, onUpload }) {
     setFiles(updatedFiles);
   };
 
-  const handleUploadClick = () => {
-    const selectedFiles = files.map((item) => item.file);
+ const handleUploadClick = async () => {
+  const selectedFiles = files.map((item) => item.file);
 
-    onUpload(selectedFiles);
+  await onUpload(selectedFiles);
 
-    setFiles([]);
-
-    onClose();
-  };
-
+  setFiles([]);
+  onClose();
+};
   return (
     <div className="modal-overlay">
       <div className="upload-modal">

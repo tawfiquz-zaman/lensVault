@@ -12,8 +12,30 @@ function Dashboard() {
 
   const { photos, addPhotos } = usePhotos();
 
-  const handleUpload = (newPhotos) => {
-    addPhotos(newPhotos);
+  const handleUpload = async (selectedFiles) => {
+    const convertedPhotos = await Promise.all(
+      selectedFiles.map(
+        (file) =>
+          new Promise((resolve) => {
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+              resolve({
+                id: Date.now() + Math.random(),
+                image: reader.result,
+                category: "Uploaded",
+                likes: 0,
+                comments: 0,
+                user: "You",
+              });
+            };
+
+            reader.readAsDataURL(file);
+          })
+      )
+    );
+
+    addPhotos(convertedPhotos);
   };
 
   return (
