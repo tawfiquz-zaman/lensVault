@@ -5,49 +5,25 @@ import UploadButton from "../components/UploadButton";
 import GalleryGrid from "../components/GalleryGrid";
 import UploadModal from "../components/UploadModal";
 
+import { usePhotos } from "../context/PhotoContext";
+
 function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [photos, setPhotos] = useState([
-    {
-      id: 1,
-      image:
-        "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-      category: "Nature",
-    },
-    {
-      id: 2,
-      image:
-        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-      category: "Travel",
-    },
-    {
-      id: 3,
-      image:
-        "https://images.unsplash.com/photo-1517841905240-472988babdf9",
-      category: "Portrait",
-    },
-  ]);
+  const { photos, addPhotos } = usePhotos();
 
-  const handleUpload = (newImages) => {
-    const uploadedPhotos = newImages.map((file, index) => ({
-      id: Date.now() + index,
-      image: URL.createObjectURL(file),
-      category: "Uploaded",
-    }));
-
-    setPhotos((prev) => [...uploadedPhotos, ...prev]);
+  const handleUpload = (newPhotos) => {
+    addPhotos(newPhotos);
   };
 
   return (
     <div className="dashboard">
       <DashboardNavbar />
 
-      <StorageCard />
-
-      <UploadButton
-        onClick={() => setIsModalOpen(true)}
-      />
+      <div className="dashboard-header">
+        <StorageCard />
+        <UploadButton onClick={() => setIsModalOpen(true)} />
+      </div>
 
       <GalleryGrid photos={photos} />
 
