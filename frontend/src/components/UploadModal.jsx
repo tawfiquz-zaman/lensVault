@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-function UploadModal({ isOpen, onClose }) {
+function UploadModal({ isOpen, onClose, onUpload }) {
   const [files, setFiles] = useState([]);
 
   const inputRef = useRef();
@@ -28,10 +28,19 @@ function UploadModal({ isOpen, onClose }) {
     setFiles(updatedFiles);
   };
 
+  const handleUploadClick = () => {
+    const selectedFiles = files.map((item) => item.file);
+
+    onUpload(selectedFiles);
+
+    setFiles([]);
+
+    onClose();
+  };
+
   return (
     <div className="modal-overlay">
       <div className="upload-modal">
-
         <button className="close-btn" onClick={onClose}>
           ✕
         </button>
@@ -77,6 +86,13 @@ function UploadModal({ isOpen, onClose }) {
           ))}
         </div>
 
+        <button
+          className="upload-submit-btn"
+          onClick={handleUploadClick}
+          disabled={files.length === 0}
+        >
+          Upload
+        </button>
       </div>
     </div>
   );
