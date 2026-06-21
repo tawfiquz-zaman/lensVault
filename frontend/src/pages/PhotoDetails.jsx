@@ -1,12 +1,15 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { usePhotos } from "../context/PhotoContext";
 
 function PhotoDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
-  const { photos } = usePhotos();
+  const { photos, deletePhoto } = usePhotos();
 
-  const photo = photos.find((item) => item.id === Number(id));
+  const photo = photos.find(
+    (item) => item.id === Number(id)
+  );
 
   if (!photo) {
     return (
@@ -15,6 +18,11 @@ function PhotoDetails() {
       </div>
     );
   }
+
+  const handleDelete = () => {
+    deletePhoto(photo.id);
+    navigate("/dashboard");
+  };
 
   return (
     <div className="photo-details-page">
@@ -37,16 +45,23 @@ function PhotoDetails() {
           </p>
 
           <p>
-            <strong>Likes:</strong> {photo.likes}
+            <strong>Likes:</strong> {photo.likes || 0}
           </p>
 
           <p>
-            <strong>Comments:</strong> {photo.comments}
+            <strong>Comments:</strong> {photo.comments || 0}
           </p>
 
           <p>
             <strong>Photo ID:</strong> {photo.id}
           </p>
+
+          <button
+            className="delete-photo-btn"
+            onClick={handleDelete}
+          >
+            Delete Photo
+          </button>
         </div>
       </div>
     </div>

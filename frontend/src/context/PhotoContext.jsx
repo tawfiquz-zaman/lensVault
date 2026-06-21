@@ -3,25 +3,21 @@ import { createContext, useContext, useEffect, useState } from "react";
 const PhotoContext = createContext();
 
 export function PhotoProvider({ children }) {
-  const [photos, setPhotos] = useState([]);
-
-  useEffect(() => {
+  const [photos, setPhotos] = useState(() => {
     const savedPhotos = localStorage.getItem("lensvaultPhotos");
-
-    if (savedPhotos) {
-      setPhotos(JSON.parse(savedPhotos));
-    }
-  }, []);
+    return savedPhotos ? JSON.parse(savedPhotos) : [];
+  });
 
   useEffect(() => {
-    localStorage.setItem(
-      "lensvaultPhotos",
-      JSON.stringify(photos)
-    );
+    localStorage.setItem("lensvaultPhotos", JSON.stringify(photos));
   }, [photos]);
 
   const addPhotos = (newPhotos) => {
     setPhotos((prev) => [...newPhotos, ...prev]);
+  };
+
+  const deletePhoto = (id) => {
+    setPhotos((prev) => prev.filter((photo) => photo.id !== id));
   };
 
   return (
@@ -30,6 +26,7 @@ export function PhotoProvider({ children }) {
         photos,
         setPhotos,
         addPhotos,
+        deletePhoto,
       }}
     >
       {children}

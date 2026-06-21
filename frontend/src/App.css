@@ -616,55 +616,45 @@ button {
 
 .gallery-grid {
   display: grid;
-
   gap: 24px;
-
-  grid-template-columns:
-    repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .gallery-card {
-  position: relative;
-
-  overflow: hidden;
-
+  background: #0f172a;
   border-radius: 18px;
-
-  height: 260px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .gallery-card img {
   width: 100%;
-  height: 100%;
-
+  height: 220px;
   object-fit: cover;
-
-  transition: .4s;
+  display: block;
 }
 
-.gallery-card:hover img {
-  transform: scale(1.08);
+.gallery-card-content {
+  padding: 15px;
 }
 
-.gallery-overlay {
-  position: absolute;
-
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  padding: 18px;
-
-  background: linear-gradient(
-    transparent,
-    rgba(0,0,0,.8)
-  );
-}
-
-.gallery-overlay h4 {
+.gallery-card-content h3 {
   color: white;
+  font-size: 14px;
+  margin-bottom: 12px;
+  word-break: break-word;
 }
 
+.gallery-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.view-btn,
+.delete-btn {
+  flex: 1;
+  text-align: center;
+}
 /* ==========================
    MOBILE
 ========================== */
@@ -915,5 +905,41 @@ button {
   }
 }
 
+.gallery-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.view-btn,
+.delete-btn,
+.delete-photo-btn {
+  border: none;
+  cursor: pointer;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.view-btn {
+  background: #4f46e5;
+  color: white;
+}
+
+.delete-btn,
+.delete-photo-btn {
+  background: #dc2626;
+  color: white;
+}
+
+.view-btn:hover {
+  opacity: 0.9;
+}
+
+.delete-btn:hover,
+.delete-photo-btn:hover {
+  opacity: 0.9;
+}
 
 
