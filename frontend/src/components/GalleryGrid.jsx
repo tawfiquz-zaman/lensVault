@@ -6,8 +6,7 @@ function GalleryGrid({ photos }) {
       {photos.map((photo) => (
         <GalleryCard
           key={photo.id}
-          image={photo.image}
-          title={photo.category}
+          photo={photo}
         />
       ))}
     </div>

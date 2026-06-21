@@ -12,32 +12,38 @@ function Dashboard() {
 
   const { photos, addPhotos } = usePhotos();
 
-  const handleUpload = async (selectedFiles) => {
-    const convertedPhotos = await Promise.all(
-      selectedFiles.map(
-        (file) =>
-          new Promise((resolve) => {
-            const reader = new FileReader();
+const handleUpload = async (selectedFiles) => {
+  const convertedPhotos = await Promise.all(
+    selectedFiles.map(
+      (file) =>
+        new Promise((resolve) => {
+          const reader = new FileReader();
 
-            reader.onloadend = () => {
-              resolve({
-                id: Date.now() + Math.random(),
-                image: reader.result,
-                category: "Uploaded",
-                likes: 0,
-                comments: 0,
-                user: "You",
-              });
-            };
+          reader.onloadend = () => {
+            resolve({
+              id: Date.now() + Math.random(),
 
-            reader.readAsDataURL(file);
-          })
-      )
-    );
+              image: reader.result,
 
-    addPhotos(convertedPhotos);
-  };
+              title: file.name,
 
+              category: "Uploaded",
+
+              user: "You",
+
+              likes: 0,
+
+              comments: 0,
+            });
+          };
+
+          reader.readAsDataURL(file);
+        })
+    )
+  );
+
+  addPhotos(convertedPhotos);
+};
   return (
     <div className="dashboard">
       <DashboardNavbar />
