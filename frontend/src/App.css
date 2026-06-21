@@ -624,7 +624,7 @@ button {
   background: #0f172a;
   border-radius: 18px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .gallery-card img {
@@ -636,25 +636,94 @@ button {
 
 .gallery-card-content {
   padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .gallery-card-content h3 {
   color: white;
   font-size: 14px;
-  margin-bottom: 12px;
+  margin: 0;
   word-break: break-word;
+}
+
+.photo-user {
+  color: #94a3b8;
+  font-size: 14px;
+  margin: 0;
+}
+
+.category {
+  display: inline-block;
+  width: fit-content;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: #cbd5e1;
+  font-size: 12px;
 }
 
 .gallery-actions {
   display: flex;
+  align-items: center;
   gap: 10px;
+  margin-top: 8px;
 }
 
-.view-btn,
+.like-btn {
+  width: 80px;
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  background: #222;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.like-btn:hover {
+  transform: translateY(-2px);
+}
+
+.like-btn.liked {
+  background: #ff3366;
+}
+
 .delete-btn {
   flex: 1;
-  text-align: center;
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  background: crimson;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
 }
+
+.delete-btn:hover {
+  opacity: 0.9;
+}
+
+.view-btn {
+  flex: 1;
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.view-btn:hover {
+  opacity: 0.9;
+}
+
+
 /* ==========================
    MOBILE
 ========================== */

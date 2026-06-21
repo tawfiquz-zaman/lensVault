@@ -5,7 +5,11 @@ function PhotoDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { photos, deletePhoto } = usePhotos();
+  const {
+    photos,
+    deletePhoto,
+    toggleLike,
+  } = usePhotos();
 
   const photo = photos.find(
     (item) => item.id === Number(id)
@@ -56,12 +60,25 @@ function PhotoDetails() {
             <strong>Photo ID:</strong> {photo.id}
           </p>
 
-          <button
-            className="delete-photo-btn"
-            onClick={handleDelete}
-          >
-            Delete Photo
-          </button>
+          <div className="photo-actions">
+            <button
+              className={`like-btn ${
+                photo.liked ? "liked" : ""
+              }`}
+              onClick={() =>
+                toggleLike(photo.id)
+              }
+            >
+              ❤️ {photo.likes}
+            </button>
+
+            <button
+              className="delete-photo-btn"
+              onClick={handleDelete}
+            >
+              Delete Photo
+            </button>
+          </div>
         </div>
       </div>
     </div>
