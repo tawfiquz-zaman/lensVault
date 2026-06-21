@@ -6,7 +6,12 @@ export function PhotoProvider({ children }) {
   const [photos, setPhotos] = useState(() => {
     const savedPhotos = localStorage.getItem("lensvaultPhotos");
 
-    return savedPhotos ? JSON.parse(savedPhotos) : [];
+    if (!savedPhotos) return [];
+
+    return JSON.parse(savedPhotos).map((photo) => ({
+      ...photo,
+      commentsList: photo.commentsList || [],
+    }));
   });
 
   useEffect(() => {
@@ -42,6 +47,28 @@ export function PhotoProvider({ children }) {
     );
   };
 
+  const addComment = (id, comment) => {
+    if (!comment.trim()) return;
+
+    setPhotos((prev) =>
+      prev.map((photo) => {
+        if (photo.id !== id) return photo;
+
+        return {
+          ...photo,
+          comments: (photo.comments || 0) + 1,
+          commentsList: [
+            ...(photo.commentsList || []),
+            {
+              id: Date.now(),
+              text: comment,
+            },
+          ],
+        };
+      })
+    );
+  };
+
   return (
     <PhotoContext.Provider
       value={{
@@ -49,6 +76,7 @@ export function PhotoProvider({ children }) {
         addPhotos,
         deletePhoto,
         toggleLike,
+        addComment,
       }}
     >
       {children}

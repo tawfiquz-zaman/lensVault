@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { usePhotos } from "../context/PhotoContext";
 
@@ -5,10 +6,13 @@ function PhotoDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [comment, setComment] = useState("");
+
   const {
     photos,
     deletePhoto,
     toggleLike,
+    addComment,
   } = usePhotos();
 
   const photo = photos.find(
@@ -26,6 +30,14 @@ function PhotoDetails() {
   const handleDelete = () => {
     deletePhoto(photo.id);
     navigate("/dashboard");
+  };
+
+  const handleAddComment = () => {
+    if (!comment.trim()) return;
+
+    addComment(photo.id, comment);
+
+    setComment("");
   };
 
   return (
@@ -78,6 +90,42 @@ function PhotoDetails() {
             >
               Delete Photo
             </button>
+          </div>
+
+          <div className="comments-section">
+            <h3>
+              Comments ({photo.comments || 0})
+            </h3>
+
+            <div className="comment-form">
+              <input
+                type="text"
+                placeholder="Write a comment..."
+                value={comment}
+                onChange={(e) =>
+                  setComment(e.target.value)
+                }
+              />
+
+              <button onClick={handleAddComment}>
+                Add Comment
+              </button>
+            </div>
+
+            <div className="comments-list">
+              {photo.commentsList?.length > 0 ? (
+                photo.commentsList.map((item) => (
+                  <div
+                    key={item.id}
+                    className="comment-item"
+                  >
+                    {item.text}
+                  </div>
+                ))
+              ) : (
+                <p>No comments yet.</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
