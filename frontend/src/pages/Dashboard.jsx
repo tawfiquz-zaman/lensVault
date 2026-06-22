@@ -4,13 +4,28 @@ import StorageCard from "../components/StorageCard";
 import UploadButton from "../components/UploadButton";
 import GalleryGrid from "../components/GalleryGrid";
 import UploadModal from "../components/UploadModal";
+import SearchBar from "../components/SearchBar";
 
 import { usePhotos } from "../context/PhotoContext";
 
 function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { photos, addPhotos } = usePhotos();
+
+  const filteredPhotos = photos.filter(
+    (photo) =>
+      photo.title
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      photo.category
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      photo.user
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+  );
 
   const handleUpload = async (selectedFiles) => {
     const convertedPhotos = await Promise.all(
@@ -22,21 +37,13 @@ function Dashboard() {
             reader.onloadend = () => {
               resolve({
                 id: Date.now() + Math.random(),
-
                 image: reader.result,
-
                 title: file.name,
-
                 category: "Uploaded",
-
                 user: "You",
-
                 likes: 0,
-
                 comments: 0,
-
                 liked: false,
-
                 commentsList: [],
               });
             };
@@ -58,7 +65,24 @@ function Dashboard() {
         <UploadButton onClick={() => setIsModalOpen(true)} />
       </div>
 
-      <GalleryGrid photos={photos} />
+      <SearchBar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
+
+      <>
+        {filteredPhotos.length > 0 ? (
+          <GalleryGrid photos={filteredPhotos} />
+        ) : (
+          <div className="empty-search">
+            <h2>No photos found</h2>
+            <p>
+              Try another title, category,
+              or user.
+            </p>
+          </div>
+        )}
+      </>
 
       <UploadModal
         isOpen={isModalOpen}

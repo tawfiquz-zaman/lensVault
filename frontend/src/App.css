@@ -1099,3 +1099,49 @@ button {
     width: 100%;
   }
 }
+
+
+
+/* ==========================
+   SEARCH SYSTEM
+========================== */
+
+.search-bar {
+  margin: 20px 0 30px;
+}
+
+.search-bar input {
+  width: 100%;
+
+  padding: 14px 18px;
+
+  border-radius: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: #0f172a;
+
+  color: white;
+
+  font-size: 15px;
+
+  outline: none;
+}
+
+.search-bar input:focus {
+  border-color: #3b82f6;
+}
+
+.empty-search {
+  text-align: center;
+
+  padding: 80px 20px;
+
+  color: #94a3b8;
+}
+
+.empty-search h2 {
+  color: white;
+
+  margin-bottom: 10px;
+}
