@@ -12,6 +12,7 @@ function PhotoDetails() {
     photos,
     deletePhoto,
     toggleLike,
+    toggleFavorite,
     addComment,
   } = usePhotos();
 
@@ -74,6 +75,21 @@ function PhotoDetails() {
 
           <div className="photo-actions">
             <button
+              className={`favorite-btn ${
+                photo.favorite
+                  ? "favorited"
+                  : ""
+              }`}
+              onClick={() =>
+                toggleFavorite(photo.id)
+              }
+            >
+              {photo.favorite
+                ? "★ Saved"
+                : "☆ Save"}
+            </button>
+
+            <button
               className={`like-btn ${
                 photo.liked ? "liked" : ""
               }`}
@@ -113,15 +129,18 @@ function PhotoDetails() {
             </div>
 
             <div className="comments-list">
-              {photo.commentsList?.length > 0 ? (
-                photo.commentsList.map((item) => (
-                  <div
-                    key={item.id}
-                    className="comment-item"
-                  >
-                    {item.text}
-                  </div>
-                ))
+              {photo.commentsList?.length >
+              0 ? (
+                photo.commentsList.map(
+                  (item) => (
+                    <div
+                      key={item.id}
+                      className="comment-item"
+                    >
+                      {item.text}
+                    </div>
+                  )
+                )
               ) : (
                 <p>No comments yet.</p>
               )}

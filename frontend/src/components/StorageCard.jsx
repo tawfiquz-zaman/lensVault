@@ -6,14 +6,20 @@ function StorageCard() {
   const totalPhotos = photos.length;
 
   const totalLikes = photos.reduce(
-    (sum, photo) => sum + (photo.likes || 0),
+    (sum, photo) =>
+      sum + (photo.likes || 0),
     0
   );
 
   const totalComments = photos.reduce(
-    (sum, photo) => sum + (photo.comments || 0),
+    (sum, photo) =>
+      sum + (photo.comments || 0),
     0
   );
+
+  const totalFavorites = photos.filter(
+    (photo) => photo.favorite
+  ).length;
 
   return (
     <div className="storage-card">
@@ -39,6 +45,13 @@ function StorageCard() {
         <div className="stat-item">
           <span>Total Comments</span>
           <strong>{totalComments}</strong>
+        </div>
+
+        <div className="stat-item">
+          <span>⭐ Total Favorites</span>
+          <strong>
+            {totalFavorites}
+          </strong>
         </div>
       </div>
     </div>

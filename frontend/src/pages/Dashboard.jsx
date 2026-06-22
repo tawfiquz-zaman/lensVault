@@ -36,8 +36,13 @@ function Dashboard() {
           .includes(searchTerm.toLowerCase());
 
       const matchesCategory =
-        selectedCategory === "All" ||
-        photo.category === selectedCategory;
+        selectedCategory === "All"
+          ? true
+          : selectedCategory ===
+            "Favorites"
+          ? photo.favorite
+          : photo.category ===
+            selectedCategory;
 
       return (
         matchesSearch && matchesCategory
@@ -112,6 +117,8 @@ function Dashboard() {
 
                   liked: false,
 
+                  favorite: false,
+
                   commentsList: [],
                 });
               };
@@ -171,6 +178,22 @@ function Dashboard() {
           }
         >
           Uploaded
+        </button>
+
+        <button
+          className={
+            selectedCategory ===
+            "Favorites"
+              ? "active-filter"
+              : ""
+          }
+          onClick={() =>
+            setSelectedCategory(
+              "Favorites"
+            )
+          }
+        >
+          Favorites
         </button>
       </div>
 

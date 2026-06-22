@@ -1,17 +1,33 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 const PhotoContext = createContext();
 
-export function PhotoProvider({ children }) {
+export function PhotoProvider({
+  children,
+}) {
   const [photos, setPhotos] = useState(() => {
-    const savedPhotos = localStorage.getItem("lensvaultPhotos");
+    const savedPhotos =
+      localStorage.getItem(
+        "lensvaultPhotos"
+      );
 
     if (!savedPhotos) return [];
 
-    return JSON.parse(savedPhotos).map((photo) => ({
-      ...photo,
-      commentsList: photo.commentsList || [],
-    }));
+    return JSON.parse(savedPhotos).map(
+      (photo) => ({
+        ...photo,
+        liked: photo.liked || false,
+        favorite:
+          photo.favorite || false,
+        commentsList:
+          photo.commentsList || [],
+      })
+    );
   });
 
   useEffect(() => {
@@ -22,19 +38,25 @@ export function PhotoProvider({ children }) {
   }, [photos]);
 
   const addPhotos = (newPhotos) => {
-    setPhotos((prev) => [...newPhotos, ...prev]);
+    setPhotos((prev) => [
+      ...newPhotos,
+      ...prev,
+    ]);
   };
 
   const deletePhoto = (id) => {
     setPhotos((prev) =>
-      prev.filter((photo) => photo.id !== id)
+      prev.filter(
+        (photo) => photo.id !== id
+      )
     );
   };
 
   const toggleLike = (id) => {
     setPhotos((prev) =>
       prev.map((photo) => {
-        if (photo.id !== id) return photo;
+        if (photo.id !== id)
+          return photo;
 
         return {
           ...photo,
@@ -47,18 +69,42 @@ export function PhotoProvider({ children }) {
     );
   };
 
-  const addComment = (id, comment) => {
+  const toggleFavorite = (id) => {
+    setPhotos((prev) =>
+      prev.map((photo) => {
+        if (photo.id !== id)
+          return photo;
+
+        return {
+          ...photo,
+          favorite:
+            !photo.favorite,
+        };
+      })
+    );
+  };
+
+  const addComment = (
+    id,
+    comment
+  ) => {
     if (!comment.trim()) return;
 
     setPhotos((prev) =>
       prev.map((photo) => {
-        if (photo.id !== id) return photo;
+        if (photo.id !== id)
+          return photo;
 
         return {
           ...photo,
-          comments: (photo.comments || 0) + 1,
+          comments:
+            (photo.comments || 0) +
+            1,
+
           commentsList: [
-            ...(photo.commentsList || []),
+            ...(photo.commentsList ||
+              []),
+
             {
               id: Date.now(),
               text: comment,
@@ -76,6 +122,7 @@ export function PhotoProvider({ children }) {
         addPhotos,
         deletePhoto,
         toggleLike,
+        toggleFavorite,
         addComment,
       }}
     >

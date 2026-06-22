@@ -2,7 +2,11 @@ import { Link } from "react-router-dom";
 import { usePhotos } from "../context/PhotoContext";
 
 function GalleryCard({ photo }) {
-  const { deletePhoto, toggleLike } = usePhotos();
+  const {
+    deletePhoto,
+    toggleLike,
+    toggleFavorite,
+  } = usePhotos();
 
   return (
     <div className="gallery-card">
@@ -25,6 +29,20 @@ function GalleryCard({ photo }) {
         </span>
 
         <div className="gallery-actions">
+          <button
+            className={`favorite-btn ${
+              photo.favorite
+                ? "favorited"
+                : ""
+            }`}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite(photo.id);
+            }}
+          >
+            {photo.favorite ? "⭐" : "☆"}
+          </button>
+
           <button
             className={`like-btn ${
               photo.liked ? "liked" : ""

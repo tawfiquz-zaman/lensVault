@@ -1232,3 +1232,18 @@ SORT BAR
   font-size: 15px;
   outline: none;
 }
+
+
+.favorite-btn {
+  background: #1e293b;
+  border: none;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.favorited {
+  background: gold;
+  color: black;
+}
