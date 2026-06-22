@@ -5,6 +5,7 @@ import UploadButton from "../components/UploadButton";
 import GalleryGrid from "../components/GalleryGrid";
 import UploadModal from "../components/UploadModal";
 import SearchBar from "../components/SearchBar";
+import SortBar from "../components/SortBar";
 
 import { usePhotos } from "../context/PhotoContext";
 
@@ -15,6 +16,9 @@ function Dashboard() {
 
   const [selectedCategory, setSelectedCategory] =
     useState("All");
+
+  const [sortBy, setSortBy] =
+    useState("newest");
 
   const { photos, addPhotos } = usePhotos();
 
@@ -40,6 +44,42 @@ function Dashboard() {
       );
     }
   );
+
+  const sortedPhotos = [...filteredPhotos];
+
+  if (sortBy === "oldest") {
+    sortedPhotos.sort(
+      (a, b) => a.id - b.id
+    );
+  }
+
+  if (sortBy === "newest") {
+    sortedPhotos.sort(
+      (a, b) => b.id - a.id
+    );
+  }
+
+  if (sortBy === "likes") {
+    sortedPhotos.sort(
+      (a, b) =>
+        (b.likes || 0) -
+        (a.likes || 0)
+    );
+  }
+
+  if (sortBy === "comments") {
+    sortedPhotos.sort(
+      (a, b) =>
+        (b.comments || 0) -
+        (a.comments || 0)
+    );
+  }
+
+  if (sortBy === "title") {
+    sortedPhotos.sort((a, b) =>
+      a.title.localeCompare(b.title)
+    );
+  }
 
   const handleUpload = async (
     selectedFiles
@@ -134,9 +174,14 @@ function Dashboard() {
         </button>
       </div>
 
-      {filteredPhotos.length > 0 ? (
+      <SortBar
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+      />
+
+      {sortedPhotos.length > 0 ? (
         <GalleryGrid
-          photos={filteredPhotos}
+          photos={sortedPhotos}
         />
       ) : (
         <div className="empty-search">
@@ -144,7 +189,8 @@ function Dashboard() {
 
           <p>
             Try another title,
-            category, or user.
+            category, user, or sort
+            option.
           </p>
         </div>
       )}
