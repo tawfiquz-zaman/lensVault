@@ -10,48 +10,76 @@ import { usePhotos } from "../context/PhotoContext";
 
 function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [selectedCategory, setSelectedCategory] =
+    useState("All");
 
   const { photos, addPhotos } = usePhotos();
 
   const filteredPhotos = photos.filter(
-    (photo) =>
-      photo.title
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      photo.category
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      photo.user
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+    (photo) => {
+      const matchesSearch =
+        photo.title
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        photo.category
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        photo.user
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesCategory =
+        selectedCategory === "All" ||
+        photo.category === selectedCategory;
+
+      return (
+        matchesSearch && matchesCategory
+      );
+    }
   );
 
-  const handleUpload = async (selectedFiles) => {
-    const convertedPhotos = await Promise.all(
-      selectedFiles.map(
-        (file) =>
-          new Promise((resolve) => {
-            const reader = new FileReader();
+  const handleUpload = async (
+    selectedFiles
+  ) => {
+    const convertedPhotos =
+      await Promise.all(
+        selectedFiles.map(
+          (file) =>
+            new Promise((resolve) => {
+              const reader =
+                new FileReader();
 
-            reader.onloadend = () => {
-              resolve({
-                id: Date.now() + Math.random(),
-                image: reader.result,
-                title: file.name,
-                category: "Uploaded",
-                user: "You",
-                likes: 0,
-                comments: 0,
-                liked: false,
-                commentsList: [],
-              });
-            };
+              reader.onloadend = () => {
+                resolve({
+                  id:
+                    Date.now() +
+                    Math.random(),
 
-            reader.readAsDataURL(file);
-          })
-      )
-    );
+                  image: reader.result,
+
+                  title: file.name,
+
+                  category: "Uploaded",
+
+                  user: "You",
+
+                  likes: 0,
+
+                  comments: 0,
+
+                  liked: false,
+
+                  commentsList: [],
+                });
+              };
+
+              reader.readAsDataURL(file);
+            })
+        )
+      );
 
     addPhotos(convertedPhotos);
   };
@@ -62,7 +90,12 @@ function Dashboard() {
 
       <div className="dashboard-header">
         <StorageCard />
-        <UploadButton onClick={() => setIsModalOpen(true)} />
+
+        <UploadButton
+          onClick={() =>
+            setIsModalOpen(true)
+          }
+        />
       </div>
 
       <SearchBar
@@ -70,23 +103,57 @@ function Dashboard() {
         setSearchTerm={setSearchTerm}
       />
 
-      <>
-        {filteredPhotos.length > 0 ? (
-          <GalleryGrid photos={filteredPhotos} />
-        ) : (
-          <div className="empty-search">
-            <h2>No photos found</h2>
-            <p>
-              Try another title, category,
-              or user.
-            </p>
-          </div>
-        )}
-      </>
+      <div className="category-filters">
+        <button
+          className={
+            selectedCategory === "All"
+              ? "active-filter"
+              : ""
+          }
+          onClick={() =>
+            setSelectedCategory("All")
+          }
+        >
+          All
+        </button>
+
+        <button
+          className={
+            selectedCategory ===
+            "Uploaded"
+              ? "active-filter"
+              : ""
+          }
+          onClick={() =>
+            setSelectedCategory(
+              "Uploaded"
+            )
+          }
+        >
+          Uploaded
+        </button>
+      </div>
+
+      {filteredPhotos.length > 0 ? (
+        <GalleryGrid
+          photos={filteredPhotos}
+        />
+      ) : (
+        <div className="empty-search">
+          <h2>No photos found</h2>
+
+          <p>
+            Try another title,
+            category, or user.
+          </p>
+        </div>
+      )}
 
       <UploadModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() =>
+          setIsModalOpen(false)
+        }
         onUpload={handleUpload}
       />
     </div>
