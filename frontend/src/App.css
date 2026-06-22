@@ -1175,3 +1175,38 @@ button {
 .active-filter {
   background: #2563eb !important;
 }
+
+
+
+/* ==========================
+   DASHBOARD STATS
+========================== */
+
+.stats-section {
+  margin-top: 20px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.stat-item {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 10px 0;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stat-item span {
+  color: #94a3b8;
+}
+
+.stat-item strong {
+  color: white;
+}
