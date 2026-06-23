@@ -38,6 +38,7 @@ function Dashboard() {
     bulkUnfavorite,
   } = usePhotos();
 
+  // Filter photos
   const filteredPhotos = photos.filter(
     (photo) => {
       const matchesSearch =
@@ -73,6 +74,7 @@ function Dashboard() {
     }
   );
 
+  // Sort photos
   const sortedPhotos = [
     ...filteredPhotos,
   ];
@@ -111,6 +113,7 @@ function Dashboard() {
     );
   }
 
+  // Select single photo
   const handleSelectPhoto = (id) => {
     setSelectedPhotos((prev) =>
       prev.includes(id)
@@ -121,6 +124,7 @@ function Dashboard() {
     );
   };
 
+  // Select all visible photos
   const handleSelectAll = () => {
     setSelectedPhotos(
       sortedPhotos.map(
@@ -129,20 +133,31 @@ function Dashboard() {
     );
   };
 
+  // Bulk delete
   const handleBulkDelete = () => {
     bulkDelete(selectedPhotos);
 
     setSelectedPhotos([]);
   };
 
+  // Bulk favorite
   const handleBulkFavorite = () => {
     bulkFavorite(selectedPhotos);
   };
 
+  // Bulk unfavorite
   const handleBulkUnfavorite = () => {
     bulkUnfavorite(selectedPhotos);
   };
 
+  // Get full selected photo objects
+  // Used by Bulk Download feature
+  const selectedPhotoObjects =
+    photos.filter((photo) =>
+      selectedPhotos.includes(photo.id)
+    );
+
+  // Upload photos
   const handleUpload = async (
     selectedFiles
   ) => {
@@ -280,6 +295,9 @@ function Dashboard() {
       <BulkActions
         selectedPhotos={
           selectedPhotos
+        }
+        selectedPhotoObjects={
+          selectedPhotoObjects
         }
         onDelete={
           handleBulkDelete

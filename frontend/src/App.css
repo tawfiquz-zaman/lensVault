@@ -1367,3 +1367,9 @@ SORT BAR
 }
 
 
+/* Bulk Download Button */
+
+.bulk-download {
+  background: #2563eb;
+  color: white;
+}
