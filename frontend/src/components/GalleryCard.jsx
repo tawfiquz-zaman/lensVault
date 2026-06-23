@@ -1,15 +1,36 @@
 import { Link } from "react-router-dom";
 import { usePhotos } from "../context/PhotoContext";
 
-function GalleryCard({ photo }) {
+function GalleryCard({
+  photo,
+  selectedPhotos,
+  onSelectPhoto,
+}) {
   const {
     deletePhoto,
     toggleLike,
     toggleFavorite,
   } = usePhotos();
 
+  const isSelected =
+    selectedPhotos?.includes(photo.id);
+
   return (
-    <div className="gallery-card">
+    <div
+      className={`gallery-card ${
+        isSelected ? "selected-card" : ""
+      }`}
+    >
+      <div className="photo-select">
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={() =>
+            onSelectPhoto(photo.id)
+          }
+        />
+      </div>
+
       <Link to={`/dashboard/photo/${photo.id}`}>
         <img
           src={photo.image}

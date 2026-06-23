@@ -84,6 +84,41 @@ export function PhotoProvider({
     );
   };
 
+  const bulkDelete = (ids) => {
+    setPhotos((prev) =>
+      prev.filter(
+        (photo) =>
+          !ids.includes(photo.id)
+      )
+    );
+  };
+
+  const bulkFavorite = (ids) => {
+    setPhotos((prev) =>
+      prev.map((photo) =>
+        ids.includes(photo.id)
+          ? {
+              ...photo,
+              favorite: true,
+            }
+          : photo
+      )
+    );
+  };
+
+  const bulkUnfavorite = (ids) => {
+    setPhotos((prev) =>
+      prev.map((photo) =>
+        ids.includes(photo.id)
+          ? {
+              ...photo,
+              favorite: false,
+            }
+          : photo
+      )
+    );
+  };
+
   const addComment = (
     id,
     comment
@@ -97,6 +132,7 @@ export function PhotoProvider({
 
         return {
           ...photo,
+
           comments:
             (photo.comments || 0) +
             1,
@@ -123,6 +159,9 @@ export function PhotoProvider({
         deletePhoto,
         toggleLike,
         toggleFavorite,
+        bulkDelete,
+        bulkFavorite,
+        bulkUnfavorite,
         addComment,
       }}
     >

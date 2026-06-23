@@ -6,34 +6,56 @@ import GalleryGrid from "../components/GalleryGrid";
 import UploadModal from "../components/UploadModal";
 import SearchBar from "../components/SearchBar";
 import SortBar from "../components/SortBar";
+import BulkActions from "../components/BulkActions";
 
 import { usePhotos } from "../context/PhotoContext";
 
 function Dashboard() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] =
+    useState(false);
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] =
+    useState("");
 
-  const [selectedCategory, setSelectedCategory] =
-    useState("All");
+  const [
+    selectedCategory,
+    setSelectedCategory,
+  ] = useState("All");
 
   const [sortBy, setSortBy] =
     useState("newest");
 
-  const { photos, addPhotos } = usePhotos();
+  const [
+    selectedPhotos,
+    setSelectedPhotos,
+  ] = useState([]);
+
+  const {
+    photos,
+    addPhotos,
+    bulkDelete,
+    bulkFavorite,
+    bulkUnfavorite,
+  } = usePhotos();
 
   const filteredPhotos = photos.filter(
     (photo) => {
       const matchesSearch =
         photo.title
           .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
+          .includes(
+            searchTerm.toLowerCase()
+          ) ||
         photo.category
           .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
+          .includes(
+            searchTerm.toLowerCase()
+          ) ||
         photo.user
           .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+          .includes(
+            searchTerm.toLowerCase()
+          );
 
       const matchesCategory =
         selectedCategory === "All"
@@ -45,12 +67,15 @@ function Dashboard() {
             selectedCategory;
 
       return (
-        matchesSearch && matchesCategory
+        matchesSearch &&
+        matchesCategory
       );
     }
   );
 
-  const sortedPhotos = [...filteredPhotos];
+  const sortedPhotos = [
+    ...filteredPhotos,
+  ];
 
   if (sortBy === "oldest") {
     sortedPhotos.sort(
@@ -86,6 +111,38 @@ function Dashboard() {
     );
   }
 
+  const handleSelectPhoto = (id) => {
+    setSelectedPhotos((prev) =>
+      prev.includes(id)
+        ? prev.filter(
+            (item) => item !== id
+          )
+        : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    setSelectedPhotos(
+      sortedPhotos.map(
+        (photo) => photo.id
+      )
+    );
+  };
+
+  const handleBulkDelete = () => {
+    bulkDelete(selectedPhotos);
+
+    setSelectedPhotos([]);
+  };
+
+  const handleBulkFavorite = () => {
+    bulkFavorite(selectedPhotos);
+  };
+
+  const handleBulkUnfavorite = () => {
+    bulkUnfavorite(selectedPhotos);
+  };
+
   const handleUpload = async (
     selectedFiles
   ) => {
@@ -97,33 +154,39 @@ function Dashboard() {
               const reader =
                 new FileReader();
 
-              reader.onloadend = () => {
-                resolve({
-                  id:
-                    Date.now() +
-                    Math.random(),
+              reader.onloadend =
+                () => {
+                  resolve({
+                    id:
+                      Date.now() +
+                      Math.random(),
 
-                  image: reader.result,
+                    image:
+                      reader.result,
 
-                  title: file.name,
+                    title: file.name,
 
-                  category: "Uploaded",
+                    category:
+                      "Uploaded",
 
-                  user: "You",
+                    user: "You",
 
-                  likes: 0,
+                    likes: 0,
 
-                  comments: 0,
+                    comments: 0,
 
-                  liked: false,
+                    liked: false,
 
-                  favorite: false,
+                    favorite: false,
 
-                  commentsList: [],
-                });
-              };
+                    commentsList:
+                      [],
+                  });
+                };
 
-              reader.readAsDataURL(file);
+              reader.readAsDataURL(
+                file
+              );
             })
         )
       );
@@ -147,18 +210,23 @@ function Dashboard() {
 
       <SearchBar
         searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
+        setSearchTerm={
+          setSearchTerm
+        }
       />
 
       <div className="category-filters">
         <button
           className={
-            selectedCategory === "All"
+            selectedCategory ===
+            "All"
               ? "active-filter"
               : ""
           }
           onClick={() =>
-            setSelectedCategory("All")
+            setSelectedCategory(
+              "All"
+            )
           }
         >
           All
@@ -202,9 +270,37 @@ function Dashboard() {
         setSortBy={setSortBy}
       />
 
+      <button
+        className="select-all-btn"
+        onClick={handleSelectAll}
+      >
+        Select All
+      </button>
+
+      <BulkActions
+        selectedPhotos={
+          selectedPhotos
+        }
+        onDelete={
+          handleBulkDelete
+        }
+        onFavorite={
+          handleBulkFavorite
+        }
+        onUnfavorite={
+          handleBulkUnfavorite
+        }
+      />
+
       {sortedPhotos.length > 0 ? (
         <GalleryGrid
           photos={sortedPhotos}
+          selectedPhotos={
+            selectedPhotos
+          }
+          onSelectPhoto={
+            handleSelectPhoto
+          }
         />
       ) : (
         <div className="empty-search">
@@ -212,8 +308,8 @@ function Dashboard() {
 
           <p>
             Try another title,
-            category, user, or sort
-            option.
+            category, user, or
+            sort option.
           </p>
         </div>
       )}
