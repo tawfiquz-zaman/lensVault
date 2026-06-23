@@ -1347,3 +1347,23 @@ SORT BAR
   /* White text */
   color: white;
 }
+
+
+
+/* Download Button */
+
+.download-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.download-btn:hover {
+  opacity: 0.9;
+}
+
+

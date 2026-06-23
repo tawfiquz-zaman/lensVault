@@ -12,15 +12,36 @@ function GalleryCard({
     toggleFavorite,
   } = usePhotos();
 
+  // Check if photo is selected
   const isSelected =
     selectedPhotos?.includes(photo.id);
+
+  // Download photo
+  const handleDownload = (e) => {
+    e.stopPropagation();
+
+    const link =
+      document.createElement("a");
+
+    link.href = photo.image;
+    link.download = photo.title;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+  };
 
   return (
     <div
       className={`gallery-card ${
-        isSelected ? "selected-card" : ""
+        isSelected
+          ? "selected-card"
+          : ""
       }`}
     >
+      {/* Selection Checkbox */}
       <div className="photo-select">
         <input
           type="checkbox"
@@ -31,13 +52,17 @@ function GalleryCard({
         />
       </div>
 
-      <Link to={`/dashboard/photo/${photo.id}`}>
+      {/* Photo */}
+      <Link
+        to={`/dashboard/photo/${photo.id}`}
+      >
         <img
           src={photo.image}
           alt={photo.title}
         />
       </Link>
 
+      {/* Photo Info */}
       <div className="gallery-card-content">
         <h3>{photo.title}</h3>
 
@@ -49,7 +74,9 @@ function GalleryCard({
           {photo.category}
         </span>
 
+        {/* Action Buttons */}
         <div className="gallery-actions">
+          {/* Favorite */}
           <button
             className={`favorite-btn ${
               photo.favorite
@@ -61,12 +88,17 @@ function GalleryCard({
               toggleFavorite(photo.id);
             }}
           >
-            {photo.favorite ? "⭐" : "☆"}
+            {photo.favorite
+              ? "⭐"
+              : "☆"}
           </button>
 
+          {/* Like */}
           <button
             className={`like-btn ${
-              photo.liked ? "liked" : ""
+              photo.liked
+                ? "liked"
+                : ""
             }`}
             onClick={(e) => {
               e.stopPropagation();
@@ -76,6 +108,15 @@ function GalleryCard({
             ❤️ {photo.likes || 0}
           </button>
 
+          {/* Download */}
+          <button
+            className="download-btn"
+            onClick={handleDownload}
+          >
+            Download
+          </button>
+
+          {/* Delete */}
           <button
             className="delete-btn"
             onClick={(e) => {
