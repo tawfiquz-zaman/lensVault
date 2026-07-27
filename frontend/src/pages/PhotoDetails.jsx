@@ -9,23 +9,25 @@ function PhotoDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  // State for new comment
   const [comment, setComment] =
     useState("");
 
   const {
     photos,
     deletePhoto,
+    renamePhoto,
     toggleLike,
     toggleFavorite,
     addComment,
   } = usePhotos();
 
-  // Find photo by ID
+  // Find the current photo
   const photo = photos.find(
     (item) => item.id === Number(id)
   );
 
-  // Photo not found
+  // If photo doesn't exist
   if (!photo) {
     return (
       <div className="photo-details-page">
@@ -34,13 +36,27 @@ function PhotoDetails() {
     );
   }
 
-  // Delete photo
+  // Delete photo and return to dashboard
   const handleDelete = () => {
     deletePhoto(photo.id);
     navigate("/dashboard");
   };
 
-  // Add comment
+  // Rename photo
+  const handleRename = () => {
+    const newTitle = prompt(
+      "Enter a new photo name:",
+      photo.title
+    );
+
+    // User pressed Cancel
+    if (newTitle === null) return;
+
+    // Update title
+    renamePhoto(photo.id, newTitle);
+  };
+
+  // Add a new comment
   const handleAddComment = () => {
     if (!comment.trim()) return;
 
@@ -49,7 +65,7 @@ function PhotoDetails() {
     setComment("");
   };
 
-  // Download photo
+  // Download the image
   const handleDownload = () => {
     const link =
       document.createElement("a");
@@ -58,9 +74,7 @@ function PhotoDetails() {
     link.download = photo.title;
 
     document.body.appendChild(link);
-
     link.click();
-
     document.body.removeChild(link);
   };
 
@@ -134,6 +148,14 @@ function PhotoDetails() {
               ❤️ {photo.likes}
             </button>
 
+            {/* Rename */}
+            <button
+              className="rename-btn"
+              onClick={handleRename}
+            >
+              Rename
+            </button>
+
             {/* Download */}
             <button
               className="download-btn"
@@ -151,7 +173,7 @@ function PhotoDetails() {
             </button>
           </div>
 
-          {/* Comments Section */}
+          {/* Comments */}
           <div className="comments-section">
             <h3>
               Comments (
