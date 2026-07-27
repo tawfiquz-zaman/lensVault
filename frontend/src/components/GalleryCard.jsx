@@ -10,13 +10,14 @@ function GalleryCard({
     deletePhoto,
     toggleLike,
     toggleFavorite,
+    renamePhoto,
   } = usePhotos();
 
-  // Check if photo is selected
+  // Check if this photo is selected
   const isSelected =
     selectedPhotos?.includes(photo.id);
 
-  // Download photo
+  // Download the photo
   const handleDownload = (e) => {
     e.stopPropagation();
 
@@ -27,10 +28,24 @@ function GalleryCard({
     link.download = photo.title;
 
     document.body.appendChild(link);
-
     link.click();
-
     document.body.removeChild(link);
+  };
+
+  // Rename the photo
+  const handleRename = (e) => {
+    e.stopPropagation();
+
+    const newTitle = prompt(
+      "Enter a new photo name:",
+      photo.title
+    );
+
+    // User clicked Cancel
+    if (newTitle === null) return;
+
+    // Update the title
+    renamePhoto(photo.id, newTitle);
   };
 
   return (
@@ -62,7 +77,7 @@ function GalleryCard({
         />
       </Link>
 
-      {/* Photo Info */}
+      {/* Photo Information */}
       <div className="gallery-card-content">
         <h3>{photo.title}</h3>
 
@@ -106,6 +121,14 @@ function GalleryCard({
             }}
           >
             ❤️ {photo.likes || 0}
+          </button>
+
+          {/* Rename */}
+          <button
+            className="rename-btn"
+            onClick={handleRename}
+          >
+            Rename
           </button>
 
           {/* Download */}
