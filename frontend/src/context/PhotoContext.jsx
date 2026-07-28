@@ -37,12 +37,6 @@ export function PhotoProvider({
         comments:
           photo.comments || 0,
 
-        // ===============================
-        // Phase 21
-        // Upload Date & Time System
-        // ===============================
-        // Older photos won't have these fields,
-        // so provide safe fallback values.
         uploadDate:
           photo.uploadDate ||
           "Unknown",
@@ -53,6 +47,9 @@ export function PhotoProvider({
         uploadedAt:
           photo.uploadedAt ||
           Date.now(),
+
+        // Phase 23
+        tags: photo.tags || [],
       })
     );
   });
@@ -67,8 +64,14 @@ export function PhotoProvider({
 
   // Add newly uploaded photos
   const addPhotos = (newPhotos) => {
+    const photosWithTags =
+      newPhotos.map((photo) => ({
+        ...photo,
+        tags: photo.tags || [],
+      }));
+
     setPhotos((prev) => [
-      ...newPhotos,
+      ...photosWithTags,
       ...prev,
     ]);
   };
@@ -87,27 +90,24 @@ export function PhotoProvider({
     id,
     newTitle
   ) => {
-    // Remove unnecessary spaces
     const trimmedTitle =
       newTitle.trim();
 
-    // Ignore empty names
     if (!trimmedTitle) return;
 
     setPhotos((prev) =>
-      prev.map((photo) => {
-        if (photo.id !== id)
-          return photo;
-
-        return {
-          ...photo,
-          title: trimmedTitle,
-        };
-      })
+      prev.map((photo) =>
+        photo.id !== id
+          ? photo
+          : {
+              ...photo,
+              title: trimmedTitle,
+            }
+      )
     );
   };
 
-  // Toggle like status
+  // Toggle like
   const toggleLike = (id) => {
     setPhotos((prev) =>
       prev.map((photo) => {
@@ -116,9 +116,7 @@ export function PhotoProvider({
 
         return {
           ...photo,
-
           liked: !photo.liked,
-
           likes: photo.liked
             ? photo.likes - 1
             : photo.likes + 1,
@@ -127,24 +125,22 @@ export function PhotoProvider({
     );
   };
 
-  // Toggle favorite status
+  // Toggle favorite
   const toggleFavorite = (id) => {
     setPhotos((prev) =>
-      prev.map((photo) => {
-        if (photo.id !== id)
-          return photo;
-
-        return {
-          ...photo,
-
-          favorite:
-            !photo.favorite,
-        };
-      })
+      prev.map((photo) =>
+        photo.id !== id
+          ? photo
+          : {
+              ...photo,
+              favorite:
+                !photo.favorite,
+            }
+      )
     );
   };
 
-  // Delete multiple selected photos
+  // Bulk delete
   const bulkDelete = (ids) => {
     setPhotos((prev) =>
       prev.filter(
@@ -154,7 +150,7 @@ export function PhotoProvider({
     );
   };
 
-  // Mark selected photos as favorite
+  // Bulk favorite
   const bulkFavorite = (ids) => {
     setPhotos((prev) =>
       prev.map((photo) =>
@@ -168,8 +164,10 @@ export function PhotoProvider({
     );
   };
 
-  // Remove favorite from selected photos
-  const bulkUnfavorite = (ids) => {
+  // Bulk unfavorite
+  const bulkUnfavorite = (
+    ids
+  ) => {
     setPhotos((prev) =>
       prev.map((photo) =>
         ids.includes(photo.id)
@@ -182,7 +180,7 @@ export function PhotoProvider({
     );
   };
 
-  // Add a comment to a photo
+  // Add comment
   const addComment = (
     id,
     comment
@@ -204,12 +202,117 @@ export function PhotoProvider({
           commentsList: [
             ...(photo.commentsList ||
               []),
-
             {
               id: Date.now(),
               text: comment,
             },
           ],
+        };
+      })
+    );
+  };
+
+  // ===============================
+  // Phase 23
+  // Add Tag
+  // ===============================
+  const addTag = (
+    id,
+    newTag
+  ) => {
+    const tag =
+      newTag.trim();
+
+    if (!tag) return;
+
+    setPhotos((prev) =>
+      prev.map((photo) => {
+        if (photo.id !== id)
+          return photo;
+
+        const exists =
+          photo.tags.some(
+            (t) =>
+              t.toLowerCase() ===
+              tag.toLowerCase()
+          );
+
+        if (exists)
+          return photo;
+
+        return {
+          ...photo,
+          tags: [
+            ...photo.tags,
+            tag,
+          ],
+        };
+      })
+    );
+  };
+
+  // ===============================
+  // Remove Tag
+  // ===============================
+  const removeTag = (
+    id,
+    tagToRemove
+  ) => {
+    setPhotos((prev) =>
+      prev.map((photo) =>
+        photo.id !== id
+          ? photo
+          : {
+              ...photo,
+              tags:
+                photo.tags.filter(
+                  (tag) =>
+                    tag !==
+                    tagToRemove
+                ),
+            }
+      )
+    );
+  };
+
+  // ===============================
+  // Edit Tag
+  // ===============================
+  const editTag = (
+    id,
+    oldTag,
+    newTag
+  ) => {
+    const tag =
+      newTag.trim();
+
+    if (!tag) return;
+
+    setPhotos((prev) =>
+      prev.map((photo) => {
+        if (photo.id !== id)
+          return photo;
+
+        const exists =
+          photo.tags.some(
+            (t) =>
+              t !== oldTag &&
+              t.toLowerCase() ===
+                tag.toLowerCase()
+          );
+
+        if (exists)
+          return photo;
+
+        return {
+          ...photo,
+          tags:
+            photo.tags.map(
+              (tagItem) =>
+                tagItem === oldTag
+                  ? tag
+                  : tagItem
+            ),
         };
       })
     );
@@ -228,6 +331,11 @@ export function PhotoProvider({
         bulkFavorite,
         bulkUnfavorite,
         addComment,
+
+        // Phase 23
+        addTag,
+        removeTag,
+        editTag,
       }}
     >
       {children}
@@ -235,7 +343,6 @@ export function PhotoProvider({
   );
 }
 
-// Custom hook for accessing the PhotoContext
 export function usePhotos() {
   return useContext(PhotoContext);
 }

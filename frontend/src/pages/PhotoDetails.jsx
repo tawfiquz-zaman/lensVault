@@ -13,6 +13,10 @@ function PhotoDetails() {
   const [comment, setComment] =
     useState("");
 
+  // State for tags
+  const [newTag, setNewTag] =
+    useState("");
+
   const {
     photos,
     deletePhoto,
@@ -20,6 +24,9 @@ function PhotoDetails() {
     toggleLike,
     toggleFavorite,
     addComment,
+    addTag,
+    editTag,
+    removeTag,
   } = usePhotos();
 
   // Find the current photo
@@ -42,13 +49,13 @@ function PhotoDetails() {
     navigate("/dashboard");
   };
 
-  
+  // Rename photo
   const handleRename = () => {
     const newTitle = prompt(
       "Enter a new photo name:",
       photo.title
     );
-// Rename photo
+
     if (newTitle === null) return;
 
     renamePhoto(photo.id, newTitle);
@@ -73,6 +80,50 @@ function PhotoDetails() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+// Add tag
+const handleAddTag = () => {
+  const tag = newTag.trim();
+
+  if (!tag) return;
+
+  const exists = photo.tags?.some(
+    (item) =>
+      item.toLowerCase() ===
+      tag.toLowerCase()
+  );
+
+  if (exists) {
+    alert("Tag already exists.");
+    return;
+  }
+
+  addTag(photo.id, tag);
+  setNewTag("");
+};
+
+  // Edit tag
+  const handleEditTag = (
+    tagIndex,
+    currentTag
+  ) => {
+    const updatedTag = prompt(
+      "Edit tag:",
+      currentTag
+    );
+
+    if (
+      updatedTag === null ||
+      !updatedTag.trim()
+    )
+      return;
+
+    editTag(
+      photo.id,
+      tagIndex,
+      updatedTag.trim()
+    );
   };
 
   return (
@@ -124,6 +175,91 @@ function PhotoDetails() {
             <strong>Photo ID:</strong>{" "}
             {photo.id}
           </p>
+
+          {/* Tags */}
+          <div className="tags-section">
+
+            <h3>Tags</h3>
+
+            <div className="tag-form">
+
+              <input
+  type="text"
+  placeholder="Add a tag..."
+  value={newTag}
+  onChange={(e) =>
+    setNewTag(
+      e.target.value
+    )
+  }
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      handleAddTag();
+    }
+  }}
+/>
+
+              <button
+                onClick={
+                  handleAddTag
+                }
+              >
+                Add Tag
+              </button>
+
+            </div>
+
+            <div className="tags-list">
+
+              {photo.tags &&
+              photo.tags.length > 0 ? (
+                photo.tags.map(
+                  (
+                    tag,
+                    index
+                  ) => (
+                    <div
+                      key={index}
+                      className="tag-item"
+                    >
+                      <span>
+                        #{tag}
+                      </span>
+
+                      <button
+                        onClick={() =>
+                          handleEditTag(
+                            index,
+                            tag
+                          )
+                        }
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          removeTag(
+                            photo.id,
+                            index
+                          )
+                        }
+                      >
+                        Delete
+                      </button>
+
+                    </div>
+                  )
+                )
+              ) : (
+                <p>
+                  No tags yet.
+                </p>
+              )}
+
+            </div>
+
+          </div>
 
           {/* Action Buttons */}
           <div className="photo-actions">
