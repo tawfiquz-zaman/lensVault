@@ -3,29 +3,44 @@ import { usePhotos } from "../context/PhotoContext";
 function StorageCard() {
   const { photos } = usePhotos();
 
-  // Total uploaded photos
   const totalPhotos = photos.length;
 
-  // Total likes across all photos
+  const totalFavorites = photos.filter(
+    (photo) => photo.favorite
+  ).length;
+
   const totalLikes = photos.reduce(
     (sum, photo) =>
       sum + (photo.likes || 0),
     0
   );
 
-  // Total comments across all photos
   const totalComments = photos.reduce(
     (sum, photo) =>
-      sum + (photo.comments || 0),
+      sum +
+      (photo.commentsList
+        ? photo.commentsList.length
+        : photo.comments || 0),
     0
   );
 
-  // Total favorite photos
-  const totalFavorites = photos.filter(
-    (photo) => photo.favorite
-  ).length;
+  const today = new Date();
 
-  // Most liked photo
+  const photosToday = photos.filter((photo) => {
+    if (!photo.uploadDate) return false;
+
+    const date = new Date(photo.uploadDate);
+
+    return (
+      date.getFullYear() ===
+        today.getFullYear() &&
+      date.getMonth() ===
+        today.getMonth() &&
+      date.getDate() ===
+        today.getDate()
+    );
+  }).length;
+
   const mostLikedPhoto =
     photos.length > 0
       ? photos.reduce((max, photo) =>
@@ -36,15 +51,23 @@ function StorageCard() {
         )
       : null;
 
-  // Most commented photo
   const mostCommentedPhoto =
     photos.length > 0
-      ? photos.reduce((max, photo) =>
-          (photo.comments || 0) >
-          (max.comments || 0)
+      ? photos.reduce((max, photo) => {
+          const current =
+            photo.commentsList
+              ? photo.commentsList.length
+              : photo.comments || 0;
+
+          const highest =
+            max.commentsList
+              ? max.commentsList.length
+              : max.comments || 0;
+
+          return current > highest
             ? photo
-            : max
-        )
+            : max;
+        })
       : null;
 
   return (
@@ -77,9 +100,12 @@ function StorageCard() {
 
         <div className="stat-item">
           <span>⭐ Total Favorites</span>
-          <strong>
-            {totalFavorites}
-          </strong>
+          <strong>{totalFavorites}</strong>
+        </div>
+
+        <div className="stat-item">
+          <span>📅 Uploaded Today</span>
+          <strong>{photosToday}</strong>
         </div>
       </div>
 
@@ -102,7 +128,11 @@ function StorageCard() {
 
           <strong>
             {mostCommentedPhoto
-              ? `${mostCommentedPhoto.title} (${mostCommentedPhoto.comments || 0})`
+              ? `${mostCommentedPhoto.title} (${
+                  mostCommentedPhoto.commentsList
+                    ? mostCommentedPhoto.commentsList.length
+                    : mostCommentedPhoto.comments || 0
+                })`
               : "No photos"}
           </strong>
         </div>

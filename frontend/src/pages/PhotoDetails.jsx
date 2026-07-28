@@ -24,7 +24,7 @@ function PhotoDetails() {
 
   // Find the current photo
   const photo = photos.find(
-    (item) => item.id === Number(id)
+    (item) => String(item.id) === id
   );
 
   // If photo doesn't exist
@@ -42,17 +42,15 @@ function PhotoDetails() {
     navigate("/dashboard");
   };
 
-  // Rename photo
+  
   const handleRename = () => {
     const newTitle = prompt(
       "Enter a new photo name:",
       photo.title
     );
-
-    // User pressed Cancel
+// Rename photo
     if (newTitle === null) return;
 
-    // Update title
     renamePhoto(photo.id, newTitle);
   };
 
@@ -61,7 +59,6 @@ function PhotoDetails() {
     if (!comment.trim()) return;
 
     addComment(photo.id, comment);
-
     setComment("");
   };
 
@@ -81,6 +78,7 @@ function PhotoDetails() {
   return (
     <div className="photo-details-page">
       <div className="photo-details-container">
+
         {/* Photo Preview */}
         <img
           src={photo.image}
@@ -89,6 +87,7 @@ function PhotoDetails() {
         />
 
         <div className="photo-details-info">
+
           <h1>{photo.title}</h1>
 
           <p>
@@ -99,6 +98,16 @@ function PhotoDetails() {
           <p>
             <strong>User:</strong>{" "}
             {photo.user}
+          </p>
+
+          <p>
+            <strong>Uploaded Date:</strong>{" "}
+            {photo.uploadDate}
+          </p>
+
+          <p>
+            <strong>Uploaded Time:</strong>{" "}
+            {photo.uploadTime}
           </p>
 
           <p>
@@ -118,6 +127,7 @@ function PhotoDetails() {
 
           {/* Action Buttons */}
           <div className="photo-actions">
+
             {/* Favorite */}
             <button
               className={`favorite-btn ${
@@ -171,16 +181,19 @@ function PhotoDetails() {
             >
               Delete Photo
             </button>
+
           </div>
 
           {/* Comments */}
           <div className="comments-section">
+
             <h3>
               Comments (
               {photo.comments || 0})
             </h3>
 
             <div className="comment-form">
+
               <input
                 type="text"
                 placeholder="Write a comment..."
@@ -199,9 +212,11 @@ function PhotoDetails() {
               >
                 Add Comment
               </button>
+
             </div>
 
             <div className="comments-list">
+
               {photo.commentsList
                 ?.length > 0 ? (
                 photo.commentsList.map(
@@ -219,9 +234,13 @@ function PhotoDetails() {
                   No comments yet.
                 </p>
               )}
+
             </div>
+
           </div>
+
         </div>
+
       </div>
     </div>
   );

@@ -11,20 +11,25 @@ import BulkActions from "../components/BulkActions";
 import { usePhotos } from "../context/PhotoContext";
 
 function Dashboard() {
+  // Controls Upload Modal
   const [isModalOpen, setIsModalOpen] =
     useState(false);
 
+  // Search text
   const [searchTerm, setSearchTerm] =
     useState("");
 
+  // Current category filter
   const [
     selectedCategory,
     setSelectedCategory,
   ] = useState("All");
 
+  // Current sorting option
   const [sortBy, setSortBy] =
     useState("newest");
 
+  // Selected photos for bulk actions
   const [
     selectedPhotos,
     setSelectedPhotos,
@@ -38,7 +43,9 @@ function Dashboard() {
     bulkUnfavorite,
   } = usePhotos();
 
-  // Filter photos
+  // -----------------------------
+  // Filter Photos
+  // -----------------------------
   const filteredPhotos = photos.filter(
     (photo) => {
       const matchesSearch =
@@ -74,20 +81,26 @@ function Dashboard() {
     }
   );
 
-  // Sort photos
+  // -----------------------------
+  // Sort Photos
+  // -----------------------------
   const sortedPhotos = [
     ...filteredPhotos,
   ];
 
   if (sortBy === "oldest") {
     sortedPhotos.sort(
-      (a, b) => a.id - b.id
+      (a, b) =>
+        (a.uploadedAt || 0) -
+        (b.uploadedAt || 0)
     );
   }
 
   if (sortBy === "newest") {
     sortedPhotos.sort(
-      (a, b) => b.id - a.id
+      (a, b) =>
+        (b.uploadedAt || 0) -
+        (a.uploadedAt || 0)
     );
   }
 
@@ -113,7 +126,9 @@ function Dashboard() {
     );
   }
 
-  // Select single photo
+  // -----------------------------
+  // Select one photo
+  // -----------------------------
   const handleSelectPhoto = (id) => {
     setSelectedPhotos((prev) =>
       prev.includes(id)
@@ -124,7 +139,9 @@ function Dashboard() {
     );
   };
 
+  // -----------------------------
   // Select all visible photos
+  // -----------------------------
   const handleSelectAll = () => {
     setSelectedPhotos(
       sortedPhotos.map(
@@ -133,31 +150,30 @@ function Dashboard() {
     );
   };
 
-  // Bulk delete
+  // -----------------------------
+  // Bulk Actions
+  // -----------------------------
   const handleBulkDelete = () => {
     bulkDelete(selectedPhotos);
-
     setSelectedPhotos([]);
   };
 
-  // Bulk favorite
   const handleBulkFavorite = () => {
     bulkFavorite(selectedPhotos);
   };
 
-  // Bulk unfavorite
   const handleBulkUnfavorite = () => {
     bulkUnfavorite(selectedPhotos);
   };
 
-  // Get full selected photo objects
-  // Used by Bulk Download feature
   const selectedPhotoObjects =
     photos.filter((photo) =>
       selectedPhotos.includes(photo.id)
     );
 
-  // Upload photos
+  // -----------------------------
+  // Upload Photos
+  // -----------------------------
   const handleUpload = async (
     selectedFiles
   ) => {
@@ -171,6 +187,30 @@ function Dashboard() {
 
               reader.onloadend =
                 () => {
+                  // Create upload date & time
+                  const now =
+                    new Date();
+
+                  const uploadDate =
+                    now.toLocaleDateString(
+                      "en-GB",
+                      {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      }
+                    );
+
+                  const uploadTime =
+                    now.toLocaleTimeString(
+                      "en-US",
+                      {
+                        hour: "2-digit",
+                        minute:
+                          "2-digit",
+                      }
+                    );
+
                   resolve({
                     id:
                       Date.now() +
@@ -194,8 +234,13 @@ function Dashboard() {
 
                     favorite: false,
 
-                    commentsList:
-                      [],
+                    commentsList: [],
+
+                    // Phase 21
+                    uploadDate,
+                    uploadTime,
+                    uploadedAt:
+                      Date.now(),
                   });
                 };
 
@@ -209,10 +254,14 @@ function Dashboard() {
     addPhotos(convertedPhotos);
   };
 
-  return (
+
+
+    return (
     <div className="dashboard">
+      {/* Top Navigation */}
       <DashboardNavbar />
 
+      {/* Storage Card + Upload Button */}
       <div className="dashboard-header">
         <StorageCard />
 
@@ -223,6 +272,7 @@ function Dashboard() {
         />
       </div>
 
+      {/* Search Bar */}
       <SearchBar
         searchTerm={searchTerm}
         setSearchTerm={
@@ -230,6 +280,7 @@ function Dashboard() {
         }
       />
 
+      {/* Category Filters */}
       <div className="category-filters">
         <button
           className={
@@ -280,11 +331,13 @@ function Dashboard() {
         </button>
       </div>
 
+      {/* Sort Dropdown */}
       <SortBar
         sortBy={sortBy}
         setSortBy={setSortBy}
       />
 
+      {/* Select All Button */}
       <button
         className="select-all-btn"
         onClick={handleSelectAll}
@@ -292,6 +345,7 @@ function Dashboard() {
         Select All
       </button>
 
+      {/* Bulk Action Toolbar */}
       <BulkActions
         selectedPhotos={
           selectedPhotos
@@ -310,6 +364,7 @@ function Dashboard() {
         }
       />
 
+      {/* Gallery */}
       {sortedPhotos.length > 0 ? (
         <GalleryGrid
           photos={sortedPhotos}
@@ -332,6 +387,7 @@ function Dashboard() {
         </div>
       )}
 
+            {/* Upload Modal */}
       <UploadModal
         isOpen={isModalOpen}
         onClose={() =>

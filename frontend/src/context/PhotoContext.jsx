@@ -12,6 +12,7 @@ export function PhotoProvider({
   children,
 }) {
   // Load photos from localStorage when the app starts
+  // Also upgrade older photos with any new fields added in later phases
   const [photos, setPhotos] = useState(() => {
     const savedPhotos =
       localStorage.getItem(
@@ -20,16 +21,38 @@ export function PhotoProvider({
 
     if (!savedPhotos) return [];
 
-    // Ensure older saved photos still contain
-    // all required properties
     return JSON.parse(savedPhotos).map(
       (photo) => ({
         ...photo,
+
+        // Ensure these properties always exist
         liked: photo.liked || false,
+
         favorite:
           photo.favorite || false,
+
         commentsList:
           photo.commentsList || [],
+
+        comments:
+          photo.comments || 0,
+
+        // ===============================
+        // Phase 21
+        // Upload Date & Time System
+        // ===============================
+        // Older photos won't have these fields,
+        // so provide safe fallback values.
+        uploadDate:
+          photo.uploadDate ||
+          "Unknown",
+
+        uploadTime:
+          photo.uploadTime || "",
+
+        uploadedAt:
+          photo.uploadedAt ||
+          Date.now(),
       })
     );
   });
@@ -93,7 +116,9 @@ export function PhotoProvider({
 
         return {
           ...photo,
+
           liked: !photo.liked,
+
           likes: photo.liked
             ? photo.likes - 1
             : photo.likes + 1,
@@ -111,6 +136,7 @@ export function PhotoProvider({
 
         return {
           ...photo,
+
           favorite:
             !photo.favorite,
         };
