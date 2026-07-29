@@ -54,6 +54,30 @@ export function PhotoProvider({
     );
   });
 
+// ======================================
+// Phase 24
+// Albums
+// ======================================
+const [albums, setAlbums] = useState(() => {
+  const savedAlbums =
+    localStorage.getItem(
+      "lensvaultAlbums"
+    );
+
+  return savedAlbums
+    ? JSON.parse(savedAlbums)
+    : [];
+});
+
+
+
+
+
+
+
+
+
+
   // Save every change automatically
   useEffect(() => {
     localStorage.setItem(
@@ -62,6 +86,113 @@ export function PhotoProvider({
     );
   }, [photos]);
 
+// ======================================
+// Phase 24
+// Save albums automatically
+// ======================================
+useEffect(() => {
+  localStorage.setItem(
+    "lensvaultAlbums",
+    JSON.stringify(albums)
+  );
+}, [albums]);
+
+// ======================================
+// Phase 24
+// Create Album
+// ======================================
+const createAlbum = (name) => {
+  const albumName = name.trim();
+
+  if (!albumName) return;
+
+  const exists = albums.some(
+    (album) =>
+      album.name.toLowerCase() ===
+      albumName.toLowerCase()
+  );
+
+  if (exists) {
+    alert("Album already exists.");
+    return;
+  }
+
+  const newAlbum = {
+    id: Date.now(),
+    name: albumName,
+    photoIds: [],
+  };
+
+  setAlbums((prev) => [
+    ...prev,
+    newAlbum,
+  ]);
+};
+
+// ======================================
+// Phase 24
+// Rename Album
+// ======================================
+const renameAlbum = (
+  id,
+  newName
+) => {
+  const albumName =
+    newName.trim();
+
+  if (!albumName) return;
+
+  const exists = albums.some(
+    (album) =>
+      album.id !== id &&
+      album.name.toLowerCase() ===
+        albumName.toLowerCase()
+  );
+
+  if (exists) {
+    alert("Album name already exists.");
+    return;
+  }
+
+  setAlbums((prev) =>
+    prev.map((album) =>
+      album.id === id
+        ? {
+            ...album,
+            name: albumName,
+          }
+        : album
+    )
+  );
+};
+
+
+
+
+// ======================================
+// Phase 24
+// Delete Album
+// ======================================
+const deleteAlbum = (id) => {
+  const confirmed =
+    window.confirm(
+      "Delete this album?"
+    );
+
+  if (!confirmed) return;
+
+  setAlbums((prev) =>
+    prev.filter(
+      (album) => album.id !== id
+    )
+  );
+};
+
+
+
+
+
+  
   // Add newly uploaded photos
   const addPhotos = (newPhotos) => {
     const photosWithTags =
@@ -75,6 +206,12 @@ export function PhotoProvider({
       ...prev,
     ]);
   };
+
+
+
+  
+
+
 
   // Delete a single photo
   const deletePhoto = (id) => {
@@ -322,7 +459,13 @@ export function PhotoProvider({
     <PhotoContext.Provider
       value={{
         photos,
+        albums,
+
         addPhotos,
+        createAlbum,
+        renameAlbum,
+        deleteAlbum,
+
         deletePhoto,
         renamePhoto,
         toggleLike,

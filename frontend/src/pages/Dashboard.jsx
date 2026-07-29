@@ -7,6 +7,7 @@ import UploadModal from "../components/UploadModal";
 import SearchBar from "../components/SearchBar";
 import SortBar from "../components/SortBar";
 import BulkActions from "../components/BulkActions";
+import AlbumSidebar from "../components/AlbumSidebar";
 
 import { usePhotos } from "../context/PhotoContext";
 
@@ -271,6 +272,10 @@ function Dashboard() {
           }
         />
       </div>
+
+
+      {/* Phase 24 - Albums */}
+      <AlbumSidebar />
 
       {/* Search Bar */}
       <SearchBar

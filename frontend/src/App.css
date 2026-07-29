@@ -1402,3 +1402,72 @@ SORT BAR
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+
+
+.album-sidebar {
+  background: #111827;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 25px 0;
+  color: white;
+}
+
+.album-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.album-create-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.album-create-btn:hover {
+  background: #1d4ed8;
+}
+
+.album-card {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.album-card h3 {
+  margin: 0;
+}
+
+.album-card p {
+  color: #cbd5e1;
+}
+
+.album-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.album-rename-btn {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.album-delete-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
