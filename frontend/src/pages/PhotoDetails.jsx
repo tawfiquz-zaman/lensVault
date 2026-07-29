@@ -104,27 +104,27 @@ const handleAddTag = () => {
 };
 
   // Edit tag
-  const handleEditTag = (
-    tagIndex,
+const handleEditTag = (
+  tagIndex,
+  currentTag
+) => {
+  const updatedTag = prompt(
+    "Edit tag:",
     currentTag
-  ) => {
-    const updatedTag = prompt(
-      "Edit tag:",
-      currentTag
-    );
+  );
 
-    if (
-      updatedTag === null ||
-      !updatedTag.trim()
-    )
-      return;
+  if (
+    updatedTag === null ||
+    !updatedTag.trim()
+  )
+    return;
 
-    editTag(
-      photo.id,
-      tagIndex,
-      updatedTag.trim()
-    );
-  };
+  editTag(
+    photo.id,
+    currentTag,
+    updatedTag.trim()
+  );
+};
 
   return (
     <div className="photo-details-page">
@@ -241,7 +241,7 @@ const handleAddTag = () => {
                         onClick={() =>
                           removeTag(
                             photo.id,
-                            index
+                            tag
                           )
                         }
                       >
