@@ -5,21 +5,23 @@ import {
   useState,
 } from "react";
 
-// Create Authentication Context
+// ========================================
+// Authentication Context
+// ========================================
 const AuthContext = createContext();
 
+// ========================================
 // Authentication Provider
+// ========================================
 export function AuthProvider({ children }) {
-  // Current logged-in user
+  // Logged in user
   const [currentUser, setCurrentUser] = useState(() => {
-    // Load user from localStorage when the app starts
     const savedUser = localStorage.getItem("currentUser");
 
-    // Return parsed user if available
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  // Save current user whenever it changes
+  // Save current user
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem(
@@ -31,11 +33,105 @@ export function AuthProvider({ children }) {
     }
   }, [currentUser]);
 
+  // ========================================
+  // Register User
+  // ========================================
+  const registerUser = ({
+    name,
+    email,
+    password,
+  }) => {
+    const users =
+      JSON.parse(localStorage.getItem("users")) || [];
+
+    const emailExists = users.some(
+      (user) =>
+        user.email.toLowerCase() ===
+        email.toLowerCase()
+    );
+
+    if (emailExists) {
+      return {
+        success: false,
+        message:
+          "An account with this email already exists.",
+      };
+    }
+
+    const newUser = {
+      id: Date.now().toString(),
+      name,
+      email,
+      password,
+      createdAt: new Date().toISOString(),
+    };
+
+    users.push(newUser);
+
+    localStorage.setItem(
+      "users",
+      JSON.stringify(users)
+    );
+
+    return {
+      success: true,
+      message:
+        "Account created successfully.",
+    };
+  };
+
+  // ========================================
+  // Login User
+  // ========================================
+  const loginUser = ({
+    email,
+    password,
+  }) => {
+    const users =
+      JSON.parse(localStorage.getItem("users")) || [];
+
+    const user = users.find(
+      (item) =>
+        item.email.toLowerCase() ===
+        email.toLowerCase()
+    );
+
+    if (!user) {
+      return {
+        success: false,
+        message: "No account found with this email.",
+      };
+    }
+
+    if (user.password !== password) {
+      return {
+        success: false,
+        message: "Incorrect password.",
+      };
+    }
+
+    setCurrentUser(user);
+
+    return {
+      success: true,
+      message: "Login successful.",
+    };
+  };
+
+  // ========================================
+  // Logout User
+  // ========================================
+  const logout = () => {
+    setCurrentUser(null);
+  };
+
   return (
     <AuthContext.Provider
       value={{
         currentUser,
-        setCurrentUser,
+        registerUser,
+        loginUser,
+        logout,
       }}
     >
       {children}
@@ -43,7 +139,9 @@ export function AuthProvider({ children }) {
   );
 }
 
+// ========================================
 // Custom Hook
+// ========================================
 export function useAuth() {
   return useContext(AuthContext);
 }

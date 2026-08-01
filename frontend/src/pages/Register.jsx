@@ -1,11 +1,139 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { useAuth } from "../context/AuthContext";
 
 function Register() {
+  // Navigation
+  const navigate = useNavigate();
+
+  // Authentication Context
+  const { registerUser } = useAuth();
+
+  // ===========================
+  // Form State
+  // ===========================
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  // Error & Success Messages
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  // ===========================
+  // Handle Input Change
+  // ===========================
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  // ===========================
+  // Email Validation
+  // ===========================
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  // ===========================
+  // Handle Registration
+  // ===========================
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    // Clear previous messages
+    setError("");
+    setSuccess("");
+
+    // Trim inputs
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const password = formData.password;
+    const confirmPassword = formData.confirmPassword;
+
+    // ===========================
+    // Validation
+    // ===========================
+
+    if (!name) {
+      setError("Full name is required.");
+      return;
+    }
+
+    if (!email) {
+      setError("Email is required.");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (!password) {
+      setError("Password is required.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (!confirmPassword) {
+      setError("Please confirm your password.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    // ===========================
+    // Register User
+    // ===========================
+    const result = registerUser({
+      name,
+      email,
+      password,
+    });
+
+    if (!result.success) {
+      setError(result.message);
+      return;
+    }
+
+    // Success
+    setSuccess(result.message);
+
+    // Clear Form
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
+
+    // Redirect to Login after a short delay
+    setTimeout(() => {
+      navigate("/login");
+    }, 1200);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 via-green-50 to-emerald-100 px-4 py-10">
       {/* Register Card */}
       <div className="w-full max-w-xl rounded-2xl border border-gray-200 bg-white p-12 shadow-2xl">
-        {/* Logo / Branding */}
+        {/* Logo */}
         <div className="text-center">
           <div className="mb-3 text-5xl">📷</div>
 
@@ -22,8 +150,25 @@ function Register() {
           </p>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="mt-6 rounded-lg border border-red-200 bg-red-100 px-4 py-3 text-sm font-medium text-red-700">
+            {error}
+          </div>
+        )}
+
+        {/* Success Message */}
+        {success && (
+          <div className="mt-6 rounded-lg border border-green-200 bg-green-100 px-4 py-3 text-sm font-medium text-green-700">
+            {success}
+          </div>
+        )}
+
         {/* Register Form */}
-        <form className="mt-10 space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="mt-8 space-y-6"
+        >
           {/* Full Name */}
           <div>
             <label className="mb-2 block text-sm font-semibold text-slate-700">
@@ -32,6 +177,9 @@ function Register() {
 
             <input
               type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
               placeholder="Enter your full name"
               className="w-full rounded-xl border-2 border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 outline-none transition duration-200 focus:border-green-600"
             />
@@ -45,6 +193,9 @@ function Register() {
 
             <input
               type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="Enter your email"
               className="w-full rounded-xl border-2 border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 outline-none transition duration-200 focus:border-green-600"
             />
@@ -58,6 +209,9 @@ function Register() {
 
             <input
               type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Create a password"
               className="w-full rounded-xl border-2 border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 outline-none transition duration-200 focus:border-green-600"
             />
@@ -71,6 +225,9 @@ function Register() {
 
             <input
               type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
               placeholder="Confirm your password"
               className="w-full rounded-xl border-2 border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 outline-none transition duration-200 focus:border-green-600"
             />
@@ -79,7 +236,7 @@ function Register() {
           {/* Register Button */}
           <button
             type="submit"
-            className="mt-3 w-full rounded-xl bg-green-600 py-3 text-lg font-semibold text-white transition duration-200 hover:bg-green-700"
+            className="w-full rounded-xl bg-green-600 py-3 text-lg font-semibold text-white transition duration-200 hover:bg-green-700"
           >
             Create Account
           </button>
