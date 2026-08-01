@@ -8,13 +8,18 @@ import "./index.css";
 import "./App.css";
 
 import { PhotoProvider } from "./context/PhotoContext";
+import { AuthProvider } from "./context/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <PhotoProvider>
-        <App />
-      </PhotoProvider>
+      {/* Authentication Provider */}
+      <AuthProvider>
+        {/* Photo Management Provider */}
+        <PhotoProvider>
+          <App />
+        </PhotoProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
