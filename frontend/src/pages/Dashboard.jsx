@@ -26,6 +26,13 @@ function Dashboard() {
     setSelectedCategory,
   ] = useState("All");
 
+
+// Selected album
+const [selectedAlbum, setSelectedAlbum] =
+  useState(null);
+
+
+
   // Current sorting option
   const [sortBy, setSortBy] =
     useState("newest");
@@ -38,6 +45,7 @@ function Dashboard() {
 
   const {
     photos,
+    albums,
     addPhotos,
     bulkDelete,
     bulkFavorite,
@@ -75,9 +83,19 @@ function Dashboard() {
           : photo.category ===
             selectedCategory;
 
+ const matchesAlbum =
+      !selectedAlbum ||
+      selectedAlbum.photoIds.includes(
+        photo.id
+      );
+
+            
+
+
       return (
         matchesSearch &&
-        matchesCategory
+        matchesCategory &&
+          matchesAlbum
       );
     }
   );
@@ -275,7 +293,10 @@ function Dashboard() {
 
 
       {/* Phase 24 - Albums */}
-      <AlbumSidebar />
+  <AlbumSidebar
+  selectedAlbum={selectedAlbum}
+  setSelectedAlbum={setSelectedAlbum}
+/>
 
       {/* Search Bar */}
       <SearchBar
@@ -294,11 +315,10 @@ function Dashboard() {
               ? "active-filter"
               : ""
           }
-          onClick={() =>
-            setSelectedCategory(
-              "All"
-            )
-          }
+        onClick={() => {
+  setSelectedCategory("All");
+  setSelectedAlbum(null);
+}}
         >
           All
         </button>
@@ -310,11 +330,10 @@ function Dashboard() {
               ? "active-filter"
               : ""
           }
-          onClick={() =>
-            setSelectedCategory(
-              "Uploaded"
-            )
-          }
+          onClick={() => {
+  setSelectedCategory("Uploaded");
+  setSelectedAlbum(null);
+}}
         >
           Uploaded
         </button>
@@ -326,11 +345,10 @@ function Dashboard() {
               ? "active-filter"
               : ""
           }
-          onClick={() =>
-            setSelectedCategory(
-              "Favorites"
-            )
-          }
+        onClick={() => {
+  setSelectedCategory("Favorites");
+  setSelectedAlbum(null);
+}}
         >
           Favorites
         </button>

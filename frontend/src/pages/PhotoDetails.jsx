@@ -18,16 +18,21 @@ function PhotoDetails() {
     useState("");
 
   const {
-    photos,
-    deletePhoto,
-    renamePhoto,
-    toggleLike,
-    toggleFavorite,
-    addComment,
-    addTag,
-    editTag,
-    removeTag,
-  } = usePhotos();
+  photos,
+  albums,
+  deletePhoto,
+  renamePhoto,
+  toggleLike,
+  toggleFavorite,
+  addComment,
+  addTag,
+  editTag,
+  removeTag,
+
+
+  addPhotoToAlbum,
+    removePhotoFromAlbum,
+} = usePhotos();
 
   // Find the current photo
   const photo = photos.find(
@@ -175,6 +180,52 @@ const handleEditTag = (
             <strong>Photo ID:</strong>{" "}
             {photo.id}
           </p>
+
+           {/* ===========================
+    Phase 24
+    Add Photo To Album
+=========================== */}
+
+<div className="album-section">
+
+  <h3>Add To Album</h3>
+
+  {albums.length === 0 ? (
+    <p>No albums available.</p>
+  ) : (
+    <div className="album-buttons">
+
+      {albums.map((album) => {
+  const alreadyAdded =
+    album.photoIds.includes(photo.id);
+
+  return (
+    <button
+      key={album.id}
+      onClick={() => {
+        if (alreadyAdded) {
+          removePhotoFromAlbum(
+            album.id,
+            photo.id
+          );
+        } else {
+          addPhotoToAlbum(
+            album.id,
+            photo.id
+          );
+        }
+      }}
+    >
+      {alreadyAdded
+        ? `✓ ${album.name}`
+        : album.name}
+    </button>
+  );
+})}
+    </div>
+  )}
+
+</div>
 
           {/* Tags */}
           <div className="tags-section">

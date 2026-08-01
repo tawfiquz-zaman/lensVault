@@ -1,11 +1,12 @@
 import { usePhotos } from "../context/PhotoContext";
 
-function AlbumSidebar() {
+function AlbumSidebar({ selectedAlbum, setSelectedAlbum }) {
   const {
     albums,
     createAlbum,
     renameAlbum,
     deleteAlbum,
+    
   } = usePhotos();
 
   const handleCreateAlbum = () => {
@@ -34,9 +35,20 @@ function AlbumSidebar() {
       ) : (
         albums.map((album) => (
           <div
-            key={album.id}
-            className="album-card"
-          >
+  key={album.id}
+  className={`album-card ${
+    selectedAlbum?.id === album.id
+      ? "active"
+      : ""
+  }`}
+ onClick={() => {
+  if (selectedAlbum?.id === album.id) {
+    setSelectedAlbum(null);
+  } else {
+    setSelectedAlbum(album);
+  }
+}}
+>
             <h3>{album.name}</h3>
 
             <p>
@@ -46,7 +58,8 @@ function AlbumSidebar() {
             <div className="album-actions">
               <button
                 className="album-rename-btn"
-                onClick={() => {
+                onClick={(e) => {
+                      e.stopPropagation();
                   const newName = prompt(
                     "Rename Album",
                     album.name
@@ -65,9 +78,10 @@ function AlbumSidebar() {
 
               <button
                 className="album-delete-btn"
-                onClick={() =>
-                  deleteAlbum(album.id)
-                }
+                onClick={(e) => {
+                      e.stopPropagation();
+                     deleteAlbum(album.id);
+                        }}
               >
                 Delete
               </button>

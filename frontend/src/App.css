@@ -1471,3 +1471,60 @@ SORT BAR
   border-radius: 6px;
   cursor: pointer;
 }
+
+
+
+/* ==========================
+   Album Section
+========================== */
+
+.album-section {
+  margin: 25px 0;
+}
+
+.album-section h3 {
+  margin-bottom: 12px;
+}
+
+.album-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.album-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.album-buttons button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.album-buttons button:disabled {
+  background: #16a34a;
+  cursor: default;
+} 
+
+
+/* =========================
+   Active Album
+========================= */
+.album-card {
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.album-card:hover {
+  transform: translateY(-2px);
+}
+
+.album-card.active {
+  border: 2px solid #3b82f6;
+  background: #263654;
+}

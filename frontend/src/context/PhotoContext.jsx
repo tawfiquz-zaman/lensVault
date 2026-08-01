@@ -188,6 +188,61 @@ const deleteAlbum = (id) => {
   );
 };
 
+// ===================================
+// Phase 24
+// Add Photo To Album
+// ===================================
+const addPhotoToAlbum = (
+  albumId,
+  photoId
+) => {
+  setAlbums((prev) =>
+    prev.map((album) => {
+      if (album.id !== albumId)
+        return album;
+
+      // Prevent duplicates
+      if (
+        album.photoIds.includes(photoId)
+      ) {
+        return album;
+      }
+
+      return {
+        ...album,
+        photoIds: [
+          ...album.photoIds,
+          photoId,
+        ],
+      };
+    })
+  );
+};
+
+// ===================================
+// Remove Photo From Album
+// ===================================
+const removePhotoFromAlbum = (
+  albumId,
+  photoId
+) => {
+  setAlbums((prev) =>
+    prev.map((album) => {
+      if (album.id !== albumId)
+        return album;
+
+      return {
+        ...album,
+        photoIds: album.photoIds.filter(
+          (id) => id !== photoId
+        ),
+      };
+    })
+  );
+};
+
+
+
 
 
 
@@ -213,15 +268,25 @@ const deleteAlbum = (id) => {
 
 
 
-  // Delete a single photo
-  const deletePhoto = (id) => {
-    setPhotos((prev) =>
-      prev.filter(
-        (photo) => photo.id !== id
-      )
-    );
-  };
+ // Delete a single photo
+const deletePhoto = (id) => {
+  // Remove photo
+  setPhotos((prev) =>
+    prev.filter(
+      (photo) => photo.id !== id
+    )
+  );
 
+  // Remove photo from every album
+  setAlbums((prev) =>
+    prev.map((album) => ({
+      ...album,
+      photoIds: album.photoIds.filter(
+        (photoId) => photoId !== id
+      ),
+    }))
+  );
+};
   // Rename a photo
   const renamePhoto = (
     id,
@@ -465,6 +530,8 @@ const deleteAlbum = (id) => {
         createAlbum,
         renameAlbum,
         deleteAlbum,
+        addPhotoToAlbum,
+        removePhotoFromAlbum,
 
         deletePhoto,
         renamePhoto,
