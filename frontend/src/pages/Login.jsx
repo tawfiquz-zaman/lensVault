@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 
@@ -8,7 +12,22 @@ function Login() {
   const navigate = useNavigate();
 
   // Authentication Context
-  const { loginUser } = useAuth();
+  const {
+    loginUser,
+    currentUser,
+  } = useAuth();
+
+  // ===========================
+  // Redirect if already logged in
+  // ===========================
+  if (currentUser) {
+    return (
+      <Navigate
+        to="/dashboard"
+        replace
+      />
+    );
+  }
 
   // ===========================
   // Form State
