@@ -9,9 +9,16 @@ import PhotoDetails from "./pages/PhotoDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
+// Protected Route
+import ProtectedRoute from "./components/ProtectedRoute";
+
 function App() {
   return (
     <Routes>
+      {/* ========================= */}
+      {/* Public Routes */}
+      {/* ========================= */}
+
       {/* Home Page */}
       <Route path="/" element={<Home />} />
 
@@ -19,13 +26,28 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Dashboard (Protection will be added in Step 4) */}
-      <Route path="/dashboard" element={<Dashboard />} />
+      {/* ========================= */}
+      {/* Protected Routes */}
+      {/* ========================= */}
+
+      {/* Dashboard */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Photo Details */}
       <Route
         path="/dashboard/photo/:id"
-        element={<PhotoDetails />}
+        element={
+          <ProtectedRoute>
+            <PhotoDetails />
+          </ProtectedRoute>
+        }
       />
     </Routes>
   );
