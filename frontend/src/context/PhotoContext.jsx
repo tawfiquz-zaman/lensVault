@@ -5,97 +5,144 @@ import {
   useState,
 } from "react";
 
+import { useAuth } from "./AuthContext";
+
 // Create the Context
 const PhotoContext = createContext();
 
 export function PhotoProvider({
   children,
 }) {
-  // Load photos from localStorage when the app starts
-  // Also upgrade older photos with any new fields added in later phases
-  const [photos, setPhotos] = useState(() => {
-    const savedPhotos =
-      localStorage.getItem(
-        "lensvaultPhotos"
-      );
 
-    if (!savedPhotos) return [];
+  // ======================================
+  // Logged-in User
+  // ======================================
 
-    return JSON.parse(savedPhotos).map(
-      (photo) => ({
-        ...photo,
+  const { currentUser } = useAuth();
 
-        // Ensure these properties always exist
-        liked: photo.liked || false,
+  // ======================================
+  // User Photos
+  // ======================================
 
-        favorite:
-          photo.favorite || false,
+  const [photos, setPhotos] = useState([]);
 
-        commentsList:
-          photo.commentsList || [],
+  // ======================================
+  // Albums
+  // ======================================
 
-        comments:
-          photo.comments || 0,
-
-        uploadDate:
-          photo.uploadDate ||
-          "Unknown",
-
-        uploadTime:
-          photo.uploadTime || "",
-
-        uploadedAt:
-          photo.uploadedAt ||
-          Date.now(),
-
-        // Phase 23
-        tags: photo.tags || [],
-      })
-    );
-  });
+  const [albums, setAlbums] = useState([]);
 
 // ======================================
-// Phase 24
-// Albums
+// Prevent saving before initial load
 // ======================================
-const [albums, setAlbums] = useState(() => {
-  const savedAlbums =
-    localStorage.getItem(
-      "lensvaultAlbums"
-    );
 
-  return savedAlbums
-    ? JSON.parse(savedAlbums)
-    : [];
-});
-
-
-
-
-
-
-
-
-
-
-  // Save every change automatically
-  useEffect(() => {
-    localStorage.setItem(
-      "lensvaultPhotos",
-      JSON.stringify(photos)
-    );
-  }, [photos]);
+const [isLoaded, setIsLoaded] =
+  useState(false);
 
 // ======================================
-// Phase 24
-// Save albums automatically
+// Load Logged-in User Data
 // ======================================
 useEffect(() => {
+  // Reset loading state
+  setIsLoaded(false);
+
+  if (!currentUser) {
+    setPhotos([]);
+    setAlbums([]);
+    return;
+  }
+
+  // Storage Keys
+  const photoKey = `lensvaultPhotos_${currentUser.id}`;
+  const albumKey = `lensvaultAlbums_${currentUser.id}`;
+
+  // Load Photos
+  const savedPhotos =
+    localStorage.getItem(photoKey);
+
+  if (savedPhotos) {
+    setPhotos(
+      JSON.parse(savedPhotos).map(
+        (photo) => ({
+          ...photo,
+          liked: photo.liked || false,
+          favorite: photo.favorite || false,
+          commentsList:
+            photo.commentsList || [],
+          comments:
+            photo.comments || 0,
+          uploadDate:
+            photo.uploadDate ||
+            "Unknown",
+          uploadTime:
+            photo.uploadTime || "",
+          uploadedAt:
+            photo.uploadedAt ||
+            Date.now(),
+          tags: photo.tags || [],
+        })
+      )
+    );
+  } else {
+    setPhotos([]);
+  }
+
+  // Load Albums
+  const savedAlbums =
+    localStorage.getItem(albumKey);
+
+  if (savedAlbums) {
+    setAlbums(
+      JSON.parse(savedAlbums)
+    );
+  } else {
+    setAlbums([]);
+  }
+
+// Finished loading user data
+setIsLoaded(true);
+
+
+}, [currentUser]);
+
+
+
+
+
+
+
+
+
+
+// Save every change automatically
+useEffect(() => {
+  if (!currentUser || !isLoaded) return;
+
+  try {
+    localStorage.setItem(
+      `lensvaultPhotos_${currentUser.id}`,
+      JSON.stringify(photos)
+    );
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "Storage limit reached. Please delete some photos or use smaller images."
+    );
+  }
+}, [photos, currentUser, isLoaded]);
+
+// ======================================
+
+// Save albums automatically
+useEffect(() => {
+  if (!currentUser || !isLoaded) return;
+
   localStorage.setItem(
-    "lensvaultAlbums",
+    `lensvaultAlbums_${currentUser.id}`,
     JSON.stringify(albums)
   );
-}, [albums]);
+}, [albums, currentUser, isLoaded]);
 
 // ======================================
 // Phase 24
