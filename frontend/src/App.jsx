@@ -9,28 +9,46 @@ import PhotoDetails from "./pages/PhotoDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-// Protected Route
+// Route Guards
 import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 
 function App() {
   return (
     <Routes>
       {/* ========================= */}
-      {/* Public Routes */}
+      {/* Public Home Page */}
       {/* ========================= */}
-
-      {/* Home Page */}
       <Route path="/" element={<Home />} />
 
-      {/* Authentication Pages */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      {/* ========================= */}
+      {/* Guest Only Routes */}
+      {/* Logged-in users cannot access these */}
+      {/* ========================= */}
+
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
+
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
 
       {/* ========================= */}
       {/* Protected Routes */}
+      {/* Only logged-in users */}
       {/* ========================= */}
 
-      {/* Dashboard */}
       <Route
         path="/dashboard"
         element={
@@ -40,7 +58,6 @@ function App() {
         }
       />
 
-      {/* Photo Details */}
       <Route
         path="/dashboard/photo/:id"
         element={
