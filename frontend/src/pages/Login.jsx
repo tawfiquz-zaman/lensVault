@@ -17,17 +17,7 @@ function Login() {
     currentUser,
   } = useAuth();
 
-  // ===========================
-  // Redirect if already logged in
-  // ===========================
-  if (currentUser) {
-    return (
-      <Navigate
-        to="/dashboard"
-        replace
-      />
-    );
-  }
+
 
   // ===========================
   // Form State
