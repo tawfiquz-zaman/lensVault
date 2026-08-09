@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function DashboardNavbar() {
@@ -42,6 +42,20 @@ function DashboardNavbar() {
         <span className="status-badge">
           Drive Connected
         </span>
+
+        {/* Recycle Bin */}
+        <Link
+          to="/recycle-bin"
+          style={{
+            marginLeft: "15px",
+            marginRight: "15px",
+            textDecoration: "none",
+            color: "#2563eb",
+            fontWeight: "600",
+          }}
+        >
+          🗑 Recycle Bin
+        </Link>
 
         {/* Logged-in User Name */}
         <span

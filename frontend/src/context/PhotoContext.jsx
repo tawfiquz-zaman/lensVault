@@ -80,6 +80,17 @@ useEffect(() => {
             photo.uploadedAt ||
             Date.now(),
           tags: photo.tags || [],
+
+
+
+          deleted:
+  photo.deleted || false,
+
+deletedAt:
+  photo.deletedAt || null,
+
+
+
         })
       )
     );
@@ -298,10 +309,15 @@ const removePhotoFromAlbum = (
   // Add newly uploaded photos
   const addPhotos = (newPhotos) => {
     const photosWithTags =
-      newPhotos.map((photo) => ({
-        ...photo,
-        tags: photo.tags || [],
-      }));
+  newPhotos.map((photo) => ({
+    ...photo,
+
+    tags: photo.tags || [],
+
+    deleted: false,
+
+    deletedAt: null,
+  }));
 
     setPhotos((prev) => [
       ...photosWithTags,
@@ -317,14 +333,60 @@ const removePhotoFromAlbum = (
 
  // Delete a single photo
 const deletePhoto = (id) => {
-  // Remove photo
+  setPhotos((prev) =>
+    prev.map((photo) =>
+      photo.id !== id
+        ? photo
+        : {
+            ...photo,
+            deleted: true,
+            deletedAt: Date.now(),
+          }
+    )
+  );
+};
+
+
+
+
+
+// ======================================
+// Restore Photo
+// ======================================
+const restorePhoto = (id) => {
+  setPhotos((prev) =>
+    prev.map((photo) =>
+      photo.id !== id
+        ? photo
+        : {
+            ...photo,
+            deleted: false,
+            deletedAt: null,
+          }
+    )
+  );
+};
+
+
+
+
+
+// ======================================
+// Delete Forever
+// ======================================
+const deleteForever = (id) => {
+  const confirmed = window.confirm(
+    "Permanently delete this photo?"
+  );
+
+  if (!confirmed) return;
+
   setPhotos((prev) =>
     prev.filter(
       (photo) => photo.id !== id
     )
   );
 
-  // Remove photo from every album
   setAlbums((prev) =>
     prev.map((album) => ({
       ...album,
@@ -334,7 +396,18 @@ const deletePhoto = (id) => {
     }))
   );
 };
+
+
+
+
+
+
+
+
+
   // Rename a photo
+
+
   const renamePhoto = (
     id,
     newTitle
@@ -356,6 +429,9 @@ const deletePhoto = (id) => {
     );
   };
 
+
+
+
   // Toggle like
   const toggleLike = (id) => {
     setPhotos((prev) =>
@@ -374,6 +450,9 @@ const deletePhoto = (id) => {
     );
   };
 
+
+
+
   // Toggle favorite
   const toggleFavorite = (id) => {
     setPhotos((prev) =>
@@ -389,15 +468,24 @@ const deletePhoto = (id) => {
     );
   };
 
-  // Bulk delete
-  const bulkDelete = (ids) => {
-    setPhotos((prev) =>
-      prev.filter(
-        (photo) =>
-          !ids.includes(photo.id)
-      )
-    );
-  };
+const bulkDelete = (ids) => {
+  setPhotos((prev) =>
+    prev.map((photo) =>
+      ids.includes(photo.id)
+        ? {
+            ...photo,
+            deleted: true,
+            deletedAt: Date.now(),
+          }
+        : photo
+    )
+  );
+};
+
+
+
+
+
 
   // Bulk favorite
   const bulkFavorite = (ids) => {
@@ -581,6 +669,8 @@ const deletePhoto = (id) => {
         removePhotoFromAlbum,
 
         deletePhoto,
+        restorePhoto,
+        deleteForever,
         renamePhoto,
         toggleLike,
         toggleFavorite,

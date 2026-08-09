@@ -13,6 +13,10 @@ import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 
+//Recyle bin page
+import RecycleBin from "./pages/RecycleBin";
+
+
 function App() {
   return (
     <Routes>
@@ -49,23 +53,36 @@ function App() {
       {/* Only logged-in users */}
       {/* ========================= */}
 
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
 
-      <Route
-        path="/dashboard/photo/:id"
-        element={
-          <ProtectedRoute>
-            <PhotoDetails />
-          </ProtectedRoute>
-        }
-      />
+{/* Dashboard */}
+<Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  }
+/>
+
+{/* Recycle Bin */}
+<Route
+  path="/recycle-bin"
+  element={
+    <ProtectedRoute>
+      <RecycleBin />
+    </ProtectedRoute>
+  }
+/>
+
+{/* Photo Details */}
+<Route
+  path="/dashboard/photo/:id"
+  element={
+    <ProtectedRoute>
+      <PhotoDetails />
+    </ProtectedRoute>
+  }
+/>
     </Routes>
   );
 }

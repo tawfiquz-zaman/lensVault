@@ -53,52 +53,39 @@ const [selectedAlbum, setSelectedAlbum] =
   } = usePhotos();
 
   // -----------------------------
-  // Filter Photos
-  // -----------------------------
-  const filteredPhotos = photos.filter(
-    (photo) => {
-      const matchesSearch =
-        photo.title
-          .toLowerCase()
-          .includes(
-            searchTerm.toLowerCase()
-          ) ||
-        photo.category
-          .toLowerCase()
-          .includes(
-            searchTerm.toLowerCase()
-          ) ||
-        photo.user
-          .toLowerCase()
-          .includes(
-            searchTerm.toLowerCase()
-          );
+// Filter Photos
+// -----------------------------
+const filteredPhotos = photos
+  .filter((photo) => !photo.deleted)
+  .filter((photo) => {
+    const matchesSearch =
+      photo.title
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      photo.category
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      photo.user
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
-      const matchesCategory =
-        selectedCategory === "All"
-          ? true
-          : selectedCategory ===
-            "Favorites"
-          ? photo.favorite
-          : photo.category ===
-            selectedCategory;
+    const matchesCategory =
+      selectedCategory === "All"
+        ? true
+        : selectedCategory === "Favorites"
+        ? photo.favorite
+        : photo.category === selectedCategory;
 
- const matchesAlbum =
+    const matchesAlbum =
       !selectedAlbum ||
-      selectedAlbum.photoIds.includes(
-        photo.id
-      );
+      selectedAlbum.photoIds.includes(photo.id);
 
-            
-
-
-      return (
-        matchesSearch &&
-        matchesCategory &&
-          matchesAlbum
-      );
-    }
-  );
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesAlbum
+    );
+  });
 
   // -----------------------------
   // Sort Photos
