@@ -1,93 +1,240 @@
-import { useRef, useState } from "react";
+import {  useRef, useState } from "react";
 
-function UploadModal({ isOpen, onClose, onUpload }) {
+function UploadModal({
+  isOpen,
+  onClose,
+  onUpload,
+}) {
   const [files, setFiles] = useState([]);
+  const [isDragging, setIsDragging] =
+    useState(false);
 
   const inputRef = useRef();
 
+
+
   if (!isOpen) return null;
 
+  // ===========================
+  // Add Files
+  // ===========================
   const handleFiles = (selectedFiles) => {
-    const fileArray = Array.from(selectedFiles);
+    const incoming =
+      Array.from(selectedFiles);
 
-    const previewFiles = fileArray.map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }));
+    setFiles((prev) => {
+      const existingNames =
+        new Set(
+          prev.map(
+            (item) => item.file.name
+          )
+        );
 
-    setFiles((prev) => [...prev, ...previewFiles]);
+      const newFiles = incoming
+        .filter(
+          (file) =>
+            !existingNames.has(file.name)
+        )
+        .map((file) => ({
+          file,
+          preview:
+            URL.createObjectURL(file),
+        }));
+
+      return [...prev, ...newFiles];
+    });
+
+    inputRef.current.value = "";
   };
 
+  // ===========================
+  // Remove File
+  // ===========================
   const removeFile = (index) => {
-    const updatedFiles = [...files];
+    setFiles((prev) => {
+      const updated = [...prev];
 
-    URL.revokeObjectURL(updatedFiles[index].preview);
+      URL.revokeObjectURL(
+        updated[index].preview
+      );
 
-    updatedFiles.splice(index, 1);
+      updated.splice(index, 1);
 
-    setFiles(updatedFiles);
+      return updated;
+    });
   };
 
- const handleUploadClick = async () => {
-  const selectedFiles = files.map((item) => item.file);
 
-  await onUpload(selectedFiles);
+const handleClose = () => {
+  files.forEach((item) =>
+    URL.revokeObjectURL(item.preview)
+  );
 
   setFiles([]);
+  setIsDragging(false);
+
   onClose();
 };
+
+
+
+
+  // ===========================
+  // Upload
+  // ===========================
+  const handleUploadClick =
+    async () => {
+      const selected =
+        files.map(
+          (item) => item.file
+        );
+
+      await onUpload(selected);
+
+handleClose();
+    };
+
+  // ===========================
+  // Drag Events
+  // ===========================
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+
+    setIsDragging(false);
+
+    handleFiles(e.dataTransfer.files);
+  };
+
+// ===========================
+// Format File Size
+// ===========================
+const formatFileSize = (bytes) => {
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+};
+
+
+
   return (
     <div className="modal-overlay">
       <div className="upload-modal">
-        <button className="close-btn" onClick={onClose}>
-          ✕
-        </button>
+<button
+  className="close-btn"
+  onClick={handleClose}
+>
+  ✕
+</button>
 
         <h2>Upload Photos</h2>
 
-        <p>{files.length} file(s) selected</p>
+        <p>
+          {files.length} file(s)
+          selected
+        </p>
 
         <div
-          className="upload-dropzone"
-          onClick={() => inputRef.current.click()}
+          className={`upload-dropzone ${
+            isDragging
+              ? "drag-active"
+              : ""
+          }`}
+          onClick={() =>
+            inputRef.current.click()
+          }
+          onDragOver={
+            handleDragOver
+          }
+          onDragLeave={
+            handleDragLeave
+          }
+          onDrop={handleDrop}
         >
-          <p>Click to choose images</p>
+          <p>
+            Drag & Drop images
+            here
+          </p>
+
+          <span>or</span>
+
+          <p>
+            Click to browse
+          </p>
 
           <input
+            ref={inputRef}
             type="file"
             accept="image/*"
             multiple
-            ref={inputRef}
-            style={{ display: "none" }}
-            onChange={(e) => handleFiles(e.target.files)}
+            hidden
+            onChange={(e) =>
+              handleFiles(
+                e.target.files
+              )
+            }
           />
         </div>
 
-        <div className="preview-list">
-          {files.map((item, index) => (
-            <div className="preview-item" key={index}>
-              <img
-                src={item.preview}
-                alt="preview"
-                className="preview-image"
-              />
+<div className="preview-grid">
+  {files.map((item, index) => (
+    <div
+      className="preview-card"
+      key={index}
+    >
+      <button
+        className="preview-remove"
+        onClick={() =>
+          removeFile(index)
+        }
+      >
+        ✕
+      </button>
 
-              <p>{item.file.name}</p>
+      <img
+        src={item.preview}
+        alt={item.file.name}
+        className="preview-image"
+      />
 
-              <button
-                className="remove-btn"
-                onClick={() => removeFile(index)}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
+      <div className="preview-info">
+        <p className="preview-name">
+          {item.file.name}
+        </p>
+
+        <p className="preview-size">
+          {formatFileSize(
+            item.file.size
+          )}
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
 
         <button
           className="upload-submit-btn"
-          onClick={handleUploadClick}
-          disabled={files.length === 0}
+          disabled={
+            files.length === 0
+          }
+          onClick={
+            handleUploadClick
+          }
         >
           Upload
         </button>
