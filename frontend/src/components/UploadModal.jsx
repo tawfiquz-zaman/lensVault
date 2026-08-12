@@ -6,9 +6,10 @@ function UploadModal({
   onUpload,
 }) {
   const [files, setFiles] = useState([]);
-  const [isDragging, setIsDragging] =
-    useState(false);
-
+const [isDragging, setIsDragging] =
+  useState(false);
+const [isUploading, setIsUploading] =
+  useState(false);
   const inputRef = useRef();
 
 
@@ -72,6 +73,7 @@ const handleClose = () => {
 
   setFiles([]);
   setIsDragging(false);
+  setIsUploading(false);
 
   onClose();
 };
@@ -82,17 +84,32 @@ const handleClose = () => {
   // ===========================
   // Upload
   // ===========================
-  const handleUploadClick =
-    async () => {
-      const selected =
-        files.map(
-          (item) => item.file
-        );
+const handleUploadClick = async () => {
+  if (isUploading) return;
 
-      await onUpload(selected);
+  setIsUploading(true);
 
-handleClose();
-    };
+  try {
+    const selected = files.map(
+      (item) => item.file
+    );
+
+    await onUpload(selected);
+
+    handleClose();
+  } catch (error) {
+    console.error(
+      "Upload failed:",
+      error
+    );
+
+    alert(
+      "Something went wrong while uploading."
+    );
+
+    setIsUploading(false);
+  }
+};
 
   // ===========================
   // Drag Events
@@ -138,16 +155,27 @@ const formatFileSize = (bytes) => {
 <button
   className="close-btn"
   onClick={handleClose}
+  disabled={isUploading}
 >
   ✕
 </button>
 
         <h2>Upload Photos</h2>
 
-        <p>
-          {files.length} file(s)
-          selected
-        </p>
+      <p>
+  {files.length} file(s) selected
+</p>
+
+<p className="upload-total-size">
+  Total size:{" "}
+  {formatFileSize(
+    files.reduce(
+      (total, item) =>
+        total + item.file.size,
+      0
+    )
+  )}
+</p>
 
         <div
           className={`upload-dropzone ${
@@ -227,17 +255,18 @@ const formatFileSize = (bytes) => {
   ))}
 </div>
 
-        <button
-          className="upload-submit-btn"
-          disabled={
-            files.length === 0
-          }
-          onClick={
-            handleUploadClick
-          }
-        >
-          Upload
-        </button>
+<button
+  className="upload-submit-btn"
+  disabled={
+    files.length === 0 ||
+    isUploading
+  }
+  onClick={handleUploadClick}
+>
+  {isUploading
+    ? "Uploading..."
+    : "Upload"}
+</button>
       </div>
     </div>
   );
