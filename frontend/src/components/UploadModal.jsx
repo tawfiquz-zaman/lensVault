@@ -12,41 +12,85 @@ const [isUploading, setIsUploading] =
   useState(false);
   const inputRef = useRef();
 
+  const [validationMessage, setValidationMessage] =
+  useState("");
+
 
 
   if (!isOpen) return null;
 
   // ===========================
-  // Add Files
-  // ===========================
-  const handleFiles = (selectedFiles) => {
-    const incoming =
-      Array.from(selectedFiles);
+// Add & Validate Files
+// ===========================
+const handleFiles = (selectedFiles) => {
+  const incoming = Array.from(selectedFiles);
 
-    setFiles((prev) => {
-      const existingNames =
-        new Set(
-          prev.map(
-            (item) => item.file.name
-          )
-        );
+  // Maximum file size: 10 MB
+  const MAX_FILE_SIZE =
+    10 * 1024 * 1024;
 
-      const newFiles = incoming
-        .filter(
-          (file) =>
-            !existingNames.has(file.name)
-        )
-        .map((file) => ({
-          file,
-          preview:
-            URL.createObjectURL(file),
-        }));
+  // Validate file type
+  const invalidTypeFiles = incoming.filter(
+    (file) =>
+      !file.type.startsWith("image/")
+  );
 
-      return [...prev, ...newFiles];
-    });
+  // Validate file size
+  const oversizedFiles = incoming.filter(
+    (file) =>
+      file.size > MAX_FILE_SIZE
+  );
 
-    inputRef.current.value = "";
-  };
+  // Keep only valid files
+  const validFiles = incoming.filter(
+    (file) =>
+      file.type.startsWith("image/") &&
+      file.size <= MAX_FILE_SIZE
+  );
+
+  // Build validation message
+  const messages = [];
+
+  if (invalidTypeFiles.length > 0) {
+    messages.push(
+      `${invalidTypeFiles.length} non-image file(s) rejected.`
+    );
+  }
+
+  if (oversizedFiles.length > 0) {
+    messages.push(
+      `${oversizedFiles.length} file(s) over 10 MB rejected.`
+    );
+  }
+
+  setValidationMessage(
+    messages.join(" ")
+  );
+
+  setFiles((prev) => {
+    const existingNames = new Set(
+      prev.map(
+        (item) => item.file.name
+      )
+    );
+
+    const newFiles = validFiles
+      .filter(
+        (file) =>
+          !existingNames.has(file.name)
+      )
+      .map((file) => ({
+        file,
+        preview:
+          URL.createObjectURL(file),
+      }));
+
+    return [...prev, ...newFiles];
+  });
+
+  // Allow selecting the same file again
+  inputRef.current.value = "";
+};
 
   // ===========================
   // Remove File
@@ -74,6 +118,7 @@ const handleClose = () => {
   setFiles([]);
   setIsDragging(false);
   setIsUploading(false);
+  setValidationMessage("");
 
   onClose();
 };
@@ -176,6 +221,14 @@ const formatFileSize = (bytes) => {
     )
   )}
 </p>
+
+{validationMessage && (
+  <p className="upload-validation-message">
+    ⚠️ {validationMessage}
+  </p>
+)}
+
+
 
         <div
           className={`upload-dropzone ${

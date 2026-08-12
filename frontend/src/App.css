@@ -1605,3 +1605,16 @@ SORT BAR
 .preview-remove:hover {
   background: #ef4444;
 }
+
+
+
+
+.upload-validation-message {
+  margin: 10px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  font-size: 14px;
+  font-weight: 500;
+}
