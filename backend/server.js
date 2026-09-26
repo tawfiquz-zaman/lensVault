@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import photoRoutes from "./routes/photoRoutes.js";
 
 dotenv.config();
 
@@ -18,6 +19,9 @@ app.use(express.json());
 
 // Authentication routes
 app.use("/api/auth", authRoutes);
+
+// Photo routes
+app.use("/api/photos", photoRoutes);
 
 // Basic API route
 app.get("/api", (req, res) => {
