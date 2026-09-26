@@ -1,7 +1,7 @@
+
 import { useState } from "react";
 import {
   Link,
-  Navigate,
   useNavigate,
 } from "react-router-dom";
 
@@ -16,8 +16,6 @@ function Login() {
     loginUser,
     currentUser,
   } = useAuth();
-
-
 
   // ===========================
   // Form State
@@ -45,7 +43,7 @@ function Login() {
   // ===========================
   // Handle Login
   // ===========================
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     // Prevent page refresh
     event.preventDefault();
 
@@ -67,7 +65,7 @@ function Login() {
     }
 
     // Try Login
-    const result = loginUser({
+    const result = await loginUser({
       email,
       password,
     });
@@ -187,3 +185,4 @@ function Login() {
 }
 
 export default Login;
+

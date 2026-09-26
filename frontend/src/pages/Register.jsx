@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
@@ -46,7 +47,7 @@ function Register() {
   // ===========================
   // Handle Registration
   // ===========================
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     // Clear previous messages
@@ -101,7 +102,7 @@ function Register() {
     // ===========================
     // Register User
     // ===========================
-    const result = registerUser({
+    const result = await registerUser({
       name,
       email,
       password,
@@ -146,7 +147,8 @@ function Register() {
           </h1>
 
           <p className="mt-3 text-slate-500">
-            Create your LensVault account and start organizing your photography.
+            Create your LensVault account and start organizing your
+            photography.
           </p>
         </div>
 
@@ -268,3 +270,4 @@ function Register() {
 }
 
 export default Register;
+

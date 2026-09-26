@@ -5,6 +5,8 @@ import {
   useState,
 } from "react";
 
+import api from "../api/api";
+
 // ========================================
 // Authentication Context
 // ========================================
@@ -21,7 +23,39 @@ export function AuthProvider({ children }) {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  // Save current user
+  // ========================================
+  // Restore Session From Backend
+  // ========================================
+  useEffect(() => {
+    const restoreSession = async () => {
+      const token = localStorage.getItem("token");
+
+      // No token means user is not logged in
+      if (!token) {
+        setCurrentUser(null);
+        return;
+      }
+
+      try {
+        // Ask backend to verify JWT
+        const response = await api.get("/auth/me");
+
+        // Restore authenticated user
+        setCurrentUser(response.data.user);
+      } catch (error) {
+        // Token is invalid or expired
+        localStorage.removeItem("token");
+        localStorage.removeItem("currentUser");
+        setCurrentUser(null);
+      }
+    };
+
+    restoreSession();
+  }, []);
+
+  // ========================================
+  // Save Current User
+  // ========================================
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem(
@@ -36,92 +70,76 @@ export function AuthProvider({ children }) {
   // ========================================
   // Register User
   // ========================================
-  const registerUser = ({
+  const registerUser = async ({
     name,
     email,
     password,
   }) => {
-    const users =
-      JSON.parse(localStorage.getItem("users")) || [];
+    try {
+      const response = await api.post("/auth/register", {
+        name,
+        email,
+        password,
+      });
 
-    const emailExists = users.some(
-      (user) =>
-        user.email.toLowerCase() ===
-        email.toLowerCase()
-    );
-
-    if (emailExists) {
+      return {
+        success: true,
+        message:
+          response.data.message ||
+          "Account created successfully.",
+      };
+    } catch (error) {
       return {
         success: false,
         message:
-          "An account with this email already exists.",
+          error.response?.data?.message ||
+          "Registration failed. Please try again.",
       };
     }
-
-    const newUser = {
-      id: Date.now().toString(),
-      name,
-      email,
-      password,
-      createdAt: new Date().toISOString(),
-    };
-
-    users.push(newUser);
-
-    localStorage.setItem(
-      "users",
-      JSON.stringify(users)
-    );
-
-    return {
-      success: true,
-      message:
-        "Account created successfully.",
-    };
   };
 
   // ========================================
   // Login User
   // ========================================
-  const loginUser = ({
+  const loginUser = async ({
     email,
     password,
   }) => {
-    const users =
-      JSON.parse(localStorage.getItem("users")) || [];
+    try {
+      const response = await api.post("/auth/login", {
+        email,
+        password,
+      });
 
-    const user = users.find(
-      (item) =>
-        item.email.toLowerCase() ===
-        email.toLowerCase()
-    );
+      const { token, user } = response.data;
 
-    if (!user) {
+      // Save JWT token
+      localStorage.setItem("token", token);
+
+      // Save logged-in user
+      setCurrentUser(user);
+
+      return {
+        success: true,
+        message:
+          response.data.message ||
+          "Login successful.",
+      };
+    } catch (error) {
       return {
         success: false,
-        message: "No account found with this email.",
+        message:
+          error.response?.data?.message ||
+          "Login failed. Please try again.",
       };
     }
-
-    if (user.password !== password) {
-      return {
-        success: false,
-        message: "Incorrect password.",
-      };
-    }
-
-    setCurrentUser(user);
-
-    return {
-      success: true,
-      message: "Login successful.",
-    };
   };
 
   // ========================================
   // Logout User
   // ========================================
   const logout = () => {
+    localStorage.removeItem("token");
     setCurrentUser(null);
   };
 
@@ -145,3 +163,4 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+
