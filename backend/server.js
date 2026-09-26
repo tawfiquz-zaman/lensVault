@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import photoRoutes from "./routes/photoRoutes.js";
-
+import cloudinaryRoutes from "./routes/cloudinaryRoutes.js";
 dotenv.config();
 
 // Connect to MongoDB
@@ -22,6 +22,9 @@ app.use("/api/auth", authRoutes);
 
 // Photo routes
 app.use("/api/photos", photoRoutes);
+
+// Cloudinary routes
+app.use("/api/cloudinary", cloudinaryRoutes);
 
 // Basic API route
 app.get("/api", (req, res) => {
